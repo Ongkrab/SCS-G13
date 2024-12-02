@@ -4,11 +4,8 @@ import matplotlib.pyplot as plt
 from predator import Predator
 from reindeer import Reindeer
 from matplotlib.colors import ListedColormap, BoundaryNorm
-
-def stop_loop(event):
-    global running
-    running = False
-
+from helper import *
+from pynput import keyboard
 
 def main():  
     # Simulation parameters
@@ -19,9 +16,31 @@ def main():
     food_regeneration_rate = 0.003  # Slightly faster food regeneration
     reproduction_interval = 35  # Reproduction occurs less frequently
 
+    # Reindeer parameters
+    reindeer_initial_age=0
+    reindeer_max_speed=1.0
+    reindeer_max_age = 15
+    reindeer_energy = 1.0
+    reindeer_grazing_speed=0.2
+    reindeer_energy_decay=0.02
+    reindeer_reproductive_age = 5
+    reindeer_reproduction_rate = 0.5
+    reindeer_reproduction_energy = 0.5
+
+    # Predator parameters
+    predator_initial_age=0
+    predator_max_age = 20
+    predator_energy = 1.0
+    predator_energy_decay = 0.01
+    predator_reproductive_age = 5
+    predator_reproduction_rate = 0.5
+    predator_reproduction_energy = 0.5
+    predator_cruise_speed = 0.4
+    predator_hunt_speed = 1.5
+    predator_energy_threshold = 0.6
+
     # Initialize food grid
     food_grid = np.random.uniform(0.2, 0.8, grid_size)
-
 
     # Test a food grid with a single peak
     # food_grid = np.zeros(grid_size)
@@ -45,19 +64,35 @@ def main():
     # Initialize agents with random ages
     reindeers = [
         Reindeer(
-            np.random.uniform(0, grid_size[0]), 
-            np.random.uniform(0, grid_size[1]), 
-            age=np.random.randint(0, 15)  # Random age between 0 and 15
+            x = np.random.uniform(0, grid_size[0]), 
+            y =np.random.uniform(0, grid_size[1]), 
+            age = np.random.randint(0, 15),  # Random age between 0 and 15
+            max_age = reindeer_max_age,
+            energy = reindeer_energy,
+            energy_decay = reindeer_energy_decay,
+            reproductive_age = reindeer_reproductive_age,
+            reproduction_rate = reindeer_reproduction_rate,
+            reproduction_energy = reindeer_reproduction_energy,
+            max_speed = reindeer_max_speed,
+            grazing_speed = reindeer_grazing_speed,
         ) 
         for _ in range(num_reindeer)
     ]
 
     predators = [
         Predator(
-            np.random.uniform(0, grid_size[0]), 
-            np.random.uniform(0, grid_size[1]),
-            age=np.random.randint(0, 15),  # Random age between 0 and 15 
-            energy_decay=0.01,
+            x = np.random.uniform(0, grid_size[0]), 
+            y = np.random.uniform(0, grid_size[1]),
+            age = np.random.randint(0, 15),  # Random age between 0 and 15 
+            max_age = predator_max_age,
+            energy = predator_energy,
+            energy_decay = predator_energy_decay,
+            reproductive_age = predator_reproductive_age,
+            reproduction_rate = predator_reproduction_rate,
+            reproduction_energy = predator_reproduction_energy,
+            cruise_speed = predator_cruise_speed,
+            hunt_speed = predator_hunt_speed,
+            energy_threshold = predator_energy_threshold
         ) 
         for _ in range(num_predators)
     ]
@@ -68,9 +103,10 @@ def main():
 
     # Simulation loop
     for step in range(max_steps):
-        if keyboard.is_pressed("esc"):  # Check if Escape is pressed
-            print("Escape pressed! Exiting loop.")
-            break
+        # if keyboard.is_pressed("esc"):  # Check if Escape is pressed
+        #     print("Escape pressed! Exiting loop.")
+        #     break
+        
         # Update food grid (simple logistic regeneration)
         food_grid += food_regeneration_rate * (1 - food_grid)
         food_grid = np.clip(food_grid, 0, 1)  # Ensure food values stay within [0, 1]
@@ -152,6 +188,7 @@ def main():
         if len(reindeers) == 0:
             print("All reindeer have been hunted.")
             break
+
 
     plt.show()
     print("Simulation finished.")

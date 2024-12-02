@@ -2,20 +2,35 @@ import numpy as np
 from helper import reflective_boundaries, distance
 
 class Reindeer:
-    def __init__(self, x, y, age=0, max_speed=1.0, grazing_speed=0.2, energy_decay=0.02, grid_size=(200, 300)):
+    def __init__(self, x, y, age, max_age, energy, energy_decay, reproductive_age, reproduction_rate, reproduction_energy, max_speed, grazing_speed):
+        """
+        Initializes a reindeer object with the specified properties.
+        example:
+            age=0, 
+            max_speed=1.0,
+            grazing_speed=0.2, 
+            energy_decay=0.02,
+            self.reproductive_age = 5
+            self.max_age = 15
+            self.reproduction_rate = 0.5
+            self.energy_to_reproduce = 0.5
+        """
         self.position = np.array([x, y], dtype=float)
         self.velocity = np.random.uniform(-1, 1, 2)
-        self.energy = 1.0
+        self.energy = energy
         self.age = age
         self.max_speed = max_speed  # Speed limit for reindeer
         self.grazing_speed = grazing_speed  # Speed for grazing
-        self.reproductive_age = 5
-        self.max_age = 15
-        self.reproduction_rate = 0.5
-        self.energy_to_reproduce = 0.5
+        self.reproductive_age = reproductive_age
+        self.max_age = max_age
+        self.reproduction_rate = reproduction_rate
+        self.reproduction_energy = reproduction_energy
+        # self.reproductive_age = 5
+        # self.max_age = 15
+        # self.reproduction_rate = 0.5
+        # self.energy_to_reproduce = 0.5
         self.energy_decay = energy_decay
         self.fleeing = False
-        self.grid_size = grid_size
 
     def move(self, predators, food_grid, reindeers, protected_range=1.0, visual_range=10.0, predatory_range=10.0, exclusion_center=None, exclusion_radius=None):
         # Initialize forces
@@ -122,7 +137,7 @@ class Reindeer:
 
         # Update position
         self.position += self.velocity
-        self.position, self.velocity = reflective_boundaries(self.position, self.velocity, self.grid_size, exclusion_center, exclusion_radius)
+        self.position, self.velocity = reflective_boundaries(self.position, self.velocity, exclusion_center, exclusion_radius)
         self.energy -= self.energy_decay
 
     def graze(self, food_grid, grazing_rate=0.2):
@@ -156,23 +171,28 @@ class Reindeer:
         :param exclusion_center: Center of exclusion zone, if any.
         :param exclusion_radius: Radius of exclusion zone, if any.
         """
-        if self.age >= self.reproductive_age and self.energy >= self.energy_to_reproduce:
+        if self.age >= self.reproductive_age and self.energy >= self.reproduction_energy:
             # Generate offspring position near parent within reproduction_distance
             offset = np.random.uniform(-reproduction_distance, reproduction_distance, size=2)
             offspring_position = self.position + offset
 
             # Reflect position within grid boundaries and adjust velocity if needed
             velocity_placeholder = np.array([0.0, 0.0])  # Offspring starts stationary
-            offspring_position, _ = reflective_boundaries(offspring_position, velocity_placeholder, grid_size, exclusion_center, exclusion_radius)
+            offspring_position, _ = reflective_boundaries(offspring_position, velocity_placeholder, exclusion_center, exclusion_radius)
 
             # Create offspring with slightly randomized properties
             offspring = Reindeer(
                 x=offspring_position[0],
                 y=offspring_position[1],
-                age=0,
-                max_speed=self.max_speed,
-                grazing_speed=self.grazing_speed,
-                energy_decay=self.energy_decay
+                age = 0,
+                max_age = self.max_age,
+                energy = self.energy,
+                energy_decay = self.energy_decay,
+                reproductive_age = self.reproductive_age,
+                reproduction_rate = self.reproduction_rate,
+                reproduction_energy = self.reproduction_energy,
+                max_speed = self.max_speed,
+                grazing_speed = self.grazing_speed
             )
             offspring.energy = offspring_energy
 
@@ -180,7 +200,7 @@ class Reindeer:
             reindeers.append(offspring)
 
             # Deduct energy from parent
-            self.energy -= 0.5 * self.energy_to_reproduce
+            self.energy -= 0.5 * self.reproduction_energy
 
     def update_age(self):
         self.age += 1

@@ -30,7 +30,7 @@ At visual studiio:
 On macOS and Linux:
 
 ```sh
-$ pip3 install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 On Windows:
@@ -45,7 +45,7 @@ To run Group 13 project, fire up a terminal window and run the following command
 1. After install all lib complete
 2. Update configuration on config.json
 3. Go to project folder
-4. Run main.py
+4. Run main.py or `shift + F5` in visual studio
 
 Main Library list
 - numpy

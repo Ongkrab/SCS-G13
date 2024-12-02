@@ -7,6 +7,7 @@ matplotlib==3.9.3
 numpy==2.1.3
 packaging==24.2
 pillow==11.0.0
+pynput==1.7.7
 pyobjc==10.3.2
 pyobjc-core==10.3.2
 pyobjc-framework-Accessibility==10.3.2

@@ -3,13 +3,25 @@ import keyboard
 
 GRID_SIZE = (200, 300)
 
+
+def set_grid_size(grid_size):
+    """
+    Sets the grid size for the simulation.
+    grid_size: Tuple representing the dimensions of the grid.
+    """
+    global GRID_SIZE
+    GRID_SIZE = grid_size
+
+
 def stop_loop(event):
     global running
     running = False
 
+
 # Helper functions
 def distance(pos1, pos2):
     return np.linalg.norm(np.array(pos1) - np.array(pos2))
+
 
 def reflective_boundaries(position, velocity, exclusion_center, exclusion_radius):
     """

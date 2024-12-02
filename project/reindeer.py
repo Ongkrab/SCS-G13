@@ -1,14 +1,28 @@
 import numpy as np
 from helper import reflective_boundaries, distance
 
+
 class Reindeer:
-    def __init__(self, x, y, age, max_age, energy, energy_decay, reproductive_age, reproduction_rate, reproduction_energy, max_speed, grazing_speed):
+    def __init__(
+        self,
+        x,
+        y,
+        age,
+        max_age,
+        energy,
+        energy_decay,
+        reproductive_age,
+        reproduction_rate,
+        reproduction_energy,
+        max_speed,
+        grazing_speed,
+    ):
         """
         Initializes a reindeer object with the specified properties.
         example:
-            age=0, 
+            age=0,
             max_speed=1.0,
-            grazing_speed=0.2, 
+            grazing_speed=0.2,
             energy_decay=0.02,
             self.reproductive_age = 5
             self.max_age = 15
@@ -32,7 +46,28 @@ class Reindeer:
         self.energy_decay = energy_decay
         self.fleeing = False
 
-    def move(self, predators, food_grid, reindeers, protected_range=1.0, visual_range=10.0, predatory_range=10.0, exclusion_center=None, exclusion_radius=None):
+    def move(
+        self,
+        food_grid,
+        predators,
+        reindeers,
+        protected_range,
+        visual_range,
+        alert_range,
+        exclusion_center=None,
+        exclusion_radius=None,
+    ):
+        """
+        Simulates the movement of the reindeer based on various forces.
+        food_grid: A 2D numpy array representing the food availability on the grid.
+        predators: List of all predators in the simulation.
+        reindeers: List of all reindeer in the simulation.
+        protected_range: Minimum distance to maintain between reindeer.
+        visual_range: Maximum distance at which a reindeer can detect others.
+        alert_range: Distance at which a predator triggers the fleeing response.
+        exclusion_center: Center of exclusion zone, if any.
+        exclusion_radius: Radius of exclusion zone, if any.
+        """
         # Initialize forces
         cohesion_force = np.array([0.0, 0.0])
         alignment_force = np.array([0.0, 0.0])
@@ -65,20 +100,22 @@ class Reindeer:
             cohesion_force = (cohesion_force / neighbors - self.position) * 0.015
             alignment_force = (alignment_force / neighbors - self.velocity) * 0.015
             separation_force *= 0.1
-        
+
         if len(predators) > 0:
             for predator in predators:
                 dx = self.position[0] - predator.position[0]
                 dy = self.position[1] - predator.position[1]
                 predator_dist = np.sqrt(dx**2 + dy**2)
 
-                if predator_dist < predatory_range:
+                if predator_dist < alert_range:
                     self.fleeing = True
                     predator_force += np.array([dx, dy]) / (predator_dist + 1e-5)
                 else:
                     self.fleeing = False
-        
-        predator_force *= 0.5  # Amplify predator force to ensure it dominates in flight scenarios
+
+        predator_force *= (
+            0.5  # Amplify predator force to ensure it dominates in flight scenarios
+        )
 
         # # Food-seeking behavior (ignored if fleeing)
         # if not self.fleeing:
@@ -101,7 +138,9 @@ class Reindeer:
             x_pos, y_pos = np.round(self.position).astype(int)
             x_pos = min(max(x_pos, 0), food_grid.shape[0] - 1)
             y_pos = min(max(y_pos, 0), food_grid.shape[1] - 1)
-            x_pos = food_grid.shape[0] - 1 - x_pos  # Spegelvänd x för korrekt grid-referens
+            x_pos = (
+                food_grid.shape[0] - 1 - x_pos
+            )  # Spegelvänd x för korrekt grid-referens
 
             # Definiera kvadraten att söka i, konvertera till int för slicing
             visual_range_half = int(visual_range // 2)
@@ -119,14 +158,23 @@ class Reindeer:
             food_y = y_min + local_max_index[1]
 
             # Beräkna riktningen till den valda matcellen
-            target_position = np.array([food_grid.shape[0] - 1 - food_x, food_y])  # Spegelvänd x tillbaka
-            food_force = (target_position - self.position) / (np.linalg.norm(target_position - self.position) + 1e-5)
+            target_position = np.array(
+                [food_grid.shape[0] - 1 - food_x, food_y]
+            )  # Spegelvänd x tillbaka
+            food_force = (target_position - self.position) / (
+                np.linalg.norm(target_position - self.position) + 1e-5
+            )
             food_force *= 0.01
 
-        
         # Combine all forces
-        total_force = 0.5*(cohesion_force + alignment_force + separation_force + food_force + predator_force)
-    
+        total_force = 0.5 * (
+            cohesion_force
+            + alignment_force
+            + separation_force
+            + food_force
+            + predator_force
+        )
+
         # Update velocity
         self.velocity += total_force
         speed = np.linalg.norm(self.velocity)
@@ -137,7 +185,9 @@ class Reindeer:
 
         # Update position
         self.position += self.velocity
-        self.position, self.velocity = reflective_boundaries(self.position, self.velocity, exclusion_center, exclusion_radius)
+        self.position, self.velocity = reflective_boundaries(
+            self.position, self.velocity, exclusion_center, exclusion_radius
+        )
         self.energy -= self.energy_decay
 
     def graze(self, food_grid, grazing_rate=0.2):
@@ -157,10 +207,17 @@ class Reindeer:
             consumed_food = min(food_grid[x, y], grazing_rate)
             food_grid[x, y] -= consumed_food
             food_grid[x, y] = max(food_grid[x, y], 0.0)  # Food cannot be negative
-            self.energy += 0.2*consumed_food
+            self.energy += 0.2 * consumed_food
             self.energy = min(self.energy, 1.0)  # Cap energy at 1.0
 
-    def reproduce(self, reindeers, grid_size, reproduction_distance=5.0, offspring_energy=0.5, exclusion_center=None, exclusion_radius=None):
+    def reproduce(
+        self,
+        reindeers,
+        reproduction_distance,
+        offspring_energy,
+        exclusion_center=None,
+        exclusion_radius=None,
+    ):
         """
         Simulates reproduction for the reindeer.
 
@@ -171,28 +228,38 @@ class Reindeer:
         :param exclusion_center: Center of exclusion zone, if any.
         :param exclusion_radius: Radius of exclusion zone, if any.
         """
-        if self.age >= self.reproductive_age and self.energy >= self.reproduction_energy:
+        if (
+            self.age >= self.reproductive_age
+            and self.energy >= self.reproduction_energy
+        ):
             # Generate offspring position near parent within reproduction_distance
-            offset = np.random.uniform(-reproduction_distance, reproduction_distance, size=2)
+            offset = np.random.uniform(
+                -reproduction_distance, reproduction_distance, size=2
+            )
             offspring_position = self.position + offset
 
             # Reflect position within grid boundaries and adjust velocity if needed
             velocity_placeholder = np.array([0.0, 0.0])  # Offspring starts stationary
-            offspring_position, _ = reflective_boundaries(offspring_position, velocity_placeholder, exclusion_center, exclusion_radius)
+            offspring_position, _ = reflective_boundaries(
+                offspring_position,
+                velocity_placeholder,
+                exclusion_center,
+                exclusion_radius,
+            )
 
             # Create offspring with slightly randomized properties
             offspring = Reindeer(
                 x=offspring_position[0],
                 y=offspring_position[1],
-                age = 0,
-                max_age = self.max_age,
-                energy = self.energy,
-                energy_decay = self.energy_decay,
-                reproductive_age = self.reproductive_age,
-                reproduction_rate = self.reproduction_rate,
-                reproduction_energy = self.reproduction_energy,
-                max_speed = self.max_speed,
-                grazing_speed = self.grazing_speed
+                age=0,
+                max_age=self.max_age,
+                energy=self.energy,
+                energy_decay=self.energy_decay,
+                reproductive_age=self.reproductive_age,
+                reproduction_rate=self.reproduction_rate,
+                reproduction_energy=self.reproduction_energy,
+                max_speed=self.max_speed,
+                grazing_speed=self.grazing_speed,
             )
             offspring.energy = offspring_energy
 

@@ -19,6 +19,13 @@
 - [License](#license) -->
 
 ## Installation
+At visual studiio:
+1. Create ennvironment command + shift + p 
+2. Type python create environment
+3. Select Venv
+4. Select python version
+5. Open terminal ctrl + shift +`
+5. Run command `pip3 install -r requirements.txt`
 
 On macOS and Linux:
 

@@ -36,26 +36,21 @@ $ pip3 install -r requirements.txt
 On Windows:
 
 ```sh
-PS> python -m pip3 install -r requirements.txt
+pip3 install -r requirements.txt
 ```
-<!-- 
+
 ## Execution / Usage
 
-To run < project's name >, fire up a terminal window and run the following command:
+To run Group 13 project, fire up a terminal window and run the following command:
+1. After install all lib complete
+2. Update configuration on config.json
+3. Go to project folder
+4. Run main.py
 
-```sh
-$ <project>
-```
-
-Here are a few examples of using the < project's name > library in your code:
-
-```python
-from project import Project
-
-...
-```
-
-For more examples, please refer to the project's [Wiki](wiki) or [documentation page](docs). -->
+Main Library list
+- numpy
+- matplotlib
+- pynput
 <!-- 
 ## Technologies
 

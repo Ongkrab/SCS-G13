@@ -1,15 +1,41 @@
 import numpy as np
+import keyboard
+import json
+
+GRID_SIZE = (200, 300)
+
+
+def load_config(file_path):
+    """Load configuration from a JSON file."""
+    with open(file_path, "r") as file:
+        return json.load(file)
+
+
+def set_grid_size(grid_size):
+    """
+    Sets the grid size for the simulation.
+    grid_size: Tuple representing the dimensions of the grid.
+    """
+    global GRID_SIZE
+    GRID_SIZE = grid_size
+
+
+def stop_loop(event):
+    global running
+    running = False
+
 
 # Helper functions
 def distance(pos1, pos2):
     return np.linalg.norm(np.array(pos1) - np.array(pos2))
 
-def reflective_boundaries(position, velocity, grid_size, exclusion_center, exclusion_radius):
+
+def reflective_boundaries(position, velocity, exclusion_center, exclusion_radius):
     """
     Reflects position and inverts velocity if an agent hits grid boundaries or enters an exclusion zone.
     Uses integer operations where applicable for better performance.
     """
-    height, width = grid_size
+    height, width = GRID_SIZE
 
     # Reflect against rectangular boundaries (with integer clamping)
     position[0] = min(max(position[0], 0), height)
@@ -29,3 +55,12 @@ def reflective_boundaries(position, velocity, grid_size, exclusion_center, exclu
             position = exclusion_center + normal * exclusion_radius
 
     return position, velocity
+
+
+def on_press(key):
+    try:
+        if key == keyboard.Key.esc:
+            print("Escape pressed! Exiting loop.")
+            return False  # Stop the listener
+    except Exception as e:
+        print(f"Error: {e}")

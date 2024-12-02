@@ -1,23 +1,58 @@
 from helper import reflective_boundaries, distance
 import numpy as np
 
+
 class Predator:
-    def __init__(self, x, y, age=0, cruise_speed=0.4, hunt_speed=1.5, energy=1.0, energy_threshold=0.6, energy_decay=0.01, grid_size=(200, 300)):
+    def __init__(
+        self,
+        x,
+        y,
+        age,
+        max_age,
+        energy,
+        energy_decay,
+        reproductive_age,
+        reproduction_rate,
+        reproduction_energy,
+        cruise_speed,
+        hunt_speed,
+        energy_threshold,
+    ):
+        """
+        Initializes a predator object with the specified properties.
+        Example:
+            age = 0,
+            cruise_speed = 0.4,
+            hunt_speed = 1.5,
+            energy = 1.0,
+            energy_threshold = 0.6,
+            energy_decay = 0.01,
+            grid_size = (200,
+            300 )
+        """
         self.position = np.array([x, y], dtype=float)
         self.velocity = np.random.uniform(-1, 1, 2)
-        self.cruise_speed = cruise_speed   # Speed for patrolling
-        self.hunt_speed = hunt_speed       # Speed for hunting
-        self.energy = energy               # Energy level
+        self.cruise_speed = cruise_speed  # Speed for patrolling
+        self.hunt_speed = hunt_speed  # Speed for hunting
+        self.energy = energy  # Energy level
         self.energy_threshold = energy_threshold  # Energy threshold for hunting
-        self.energy_decay = energy_decay   # Energy decay rate
+        self.energy_decay = energy_decay  # Energy decay rate
         self.age = age
-        self.reproductive_age = 2           # Age when reproduction is possible
-        self.max_age = 15                   # Maximum age
-        self.reproduction_rate = 0.25       # Probability of reproducing
-        self.reproduction_energy = 0.4      # Energy threshold for reproduction
-        self.grid_size = grid_size          # Grid dimensions
+        self.max_age = max_age  # Maximum age
+        self.reproductive_age = reproductive_age  # Age when reproduction is possible
+        self.reproduction_rate = reproduction_rate  # Probability of reproducing
+        self.reproduction_energy = (
+            reproduction_energy  # Energy threshold for reproduction
+        )
 
-    def move(self, prey, grid_size, visual_range=20.0, std_dev=0.5, exclusion_center=None, exclusion_radius=None):
+    def move(
+        self,
+        prey,
+        visual_range=20.0,
+        std_dev=0.5,
+        exclusion_center=None,
+        exclusion_radius=None,
+    ):
         """
         Flytta predatorn baserat på energi och närvaro av byte.
         """
@@ -26,7 +61,7 @@ class Predator:
         if self.energy < self.energy_threshold:
             # Hitta närmaste byte att jaga
             target = None
-            min_distance = float('inf')
+            min_distance = float("inf")
 
             for p in prey:
                 dist = distance(self.position, p.position)
@@ -37,20 +72,26 @@ class Predator:
             if target is not None:
                 # Jaga närmaste byte
                 direction = target.position - self.position
-                self.velocity = (direction / np.linalg.norm(direction)) * self.hunt_speed
+                self.velocity = (
+                    direction / np.linalg.norm(direction)
+                ) * self.hunt_speed
             else:
                 # No prey in sight, continue patrolling
-                #direction += np.random.normal(0, std_dev, 2)  # Gaussian adjustment
-                self.velocity = (direction / np.linalg.norm(direction)) * self.hunt_speed
+                # direction += np.random.normal(0, std_dev, 2)  # Gaussian adjustment #TODO: Walking direction
+                self.velocity = (
+                    direction / np.linalg.norm(direction)
+                ) * self.hunt_speed
         else:
             # Patrolling: Adjust direction with Gaussian noise
-            #direction += np.random.normal(0, std_dev, 2)  # Gaussian adjustment
+            # direction += np.random.normal(0, std_dev, 2)  # Gaussian adjustment #TODO: Walking direction
             self.velocity = (direction / np.linalg.norm(direction)) * self.cruise_speed
 
         # Update position
         self.position += self.velocity
         # Reflect at boundaries
-        self.position, self.velocity = reflective_boundaries(self.position, self.velocity, self.grid_size, exclusion_center, exclusion_radius)
+        self.position, self.velocity = reflective_boundaries(
+            self.position, self.velocity, exclusion_center, exclusion_radius
+        )
         # Reduce energy over time
         self.energy -= self.energy_decay
 
@@ -66,7 +107,14 @@ class Predator:
                 self.energy = min(self.energy, 1.0)  # Energin får inte överstiga max
                 break
 
-    def reproduce(self, predators, grid_size, reproduction_distance=5.0, offspring_energy=0.5, exclusion_center=None, exclusion_radius=None):
+    def reproduce(
+        self,
+        predators,
+        reproduction_distance=5.0,
+        offspring_energy=0.5,  # TODO: Support assign offspring energy
+        exclusion_center=None,
+        exclusion_radius=None,
+    ):
         """
         Simulates reproduction for the predator.
 
@@ -78,31 +126,46 @@ class Predator:
         :param exclusion_radius: Radius of exclusion zone, if any.
         """
         # Check reproduction conditions
-        if self.energy >= self.reproduction_energy and self.age >= self.reproductive_age:  # Use energy threshold as a condition for reproduction
+        if (
+            self.energy >= self.reproduction_energy
+            and self.age >= self.reproductive_age
+        ):  # Use energy threshold as a condition for reproduction
             # Generate offspring position near parent within reproduction_distance
-            offset = np.random.uniform(-reproduction_distance, reproduction_distance, size=2)
+            offset = np.random.uniform(
+                -reproduction_distance, reproduction_distance, size=2
+            )
             offspring_position = self.position + offset
 
             # Reflect position within grid boundaries
             velocity_placeholder = np.array([0.0, 0.0])  # Offspring starts stationary
-            offspring_position, _ = reflective_boundaries(offspring_position, velocity_placeholder, grid_size, exclusion_center, exclusion_radius)
+            offspring_position, _ = reflective_boundaries(
+                offspring_position,
+                velocity_placeholder,
+                exclusion_center,
+                exclusion_radius,
+            )
 
             # Create offspring with similar properties
             offspring = Predator(
                 x=offspring_position[0],
                 y=offspring_position[1],
+                age=0,
+                max_age=self.max_age,
+                energy=self.energy,
+                energy_decay=self.energy_decay,
+                reproductive_age=self.reproductive_age,
+                reproduction_rate=self.reproduction_rate,
+                reproduction_energy=self.reproduction_energy,
                 cruise_speed=self.cruise_speed,
                 hunt_speed=self.hunt_speed,
-                energy=offspring_energy,
                 energy_threshold=self.energy_threshold,
-                energy_decay=self.energy_decay
             )
 
             # Add offspring to the simulation
             predators.append(offspring)
 
             # Deduct energy from parent
-            self.energy -= 0.5 * self.energy_threshold
+            self.energy -= 0.5 * self.reproduction_energy
 
     def update_age(self):
         self.age += 1

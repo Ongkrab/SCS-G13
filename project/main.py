@@ -6,7 +6,6 @@ from matplotlib.colors import ListedColormap, BoundaryNorm
 from helper import *
 from pynput import keyboard
 
-
 stop_loop = False
 
 
@@ -24,68 +23,146 @@ listener.start()
 
 
 def main():
-    # Simulation parameters
-    grid_size = (200, 300)  # Height, Width
-    num_reindeer = 200  # Increased number of reindeer
-    num_predators = 5
-    max_steps = 10000
-    food_regeneration_rate = 0.003  # Slightly faster food regeneration
-    reproduction_interval = 35  # Reproduction occurs less frequently
+    # # Simulation parameters
+    # grid_size = (200, 300)  # Height, Width
+    # num_reindeer = 200  # Increased number of reindeer
+    # num_predators = 5
+    # max_steps = 10000
+    # food_regeneration_rate = 0.003  # Slightly faster food regeneration
+    # reproduction_interval = 35  # Reproduction occurs less frequently
+
+    # #############################
+    # ## Reindeer parameters
+    # #############################
+    # # Reindeer initial parameters
+    # reindeer_initial_age = 0
+    # reindeer_max_speed = 1.0
+    # reindeer_max_age = 15
+    # reindeer_energy = 1.0
+    # reindeer_grazing_speed = 0.2
+    # reindeer_energy_decay = 0.02
+
+    # # Reindeer reproduction parameters
+    # reindeer_reproductive_age = 5
+    # reindeer_reproduction_rate = 0.5
+    # reindeer_reproduction_energy = 0.5
+    # reindeer_reproduction_distance = 10.0
+    # reindeer_offspring_energy = 0.5
+
+    # # Reindeer behavior parameters
+    # reindeer_protected_range = 2.0
+    # reindeer_visual_range = 15.0
+    # reindeer_alert_range = 5.0
+    # reindeer_grazing_rate = 0.2
+
+    # #############################
+    # ## Predator parameters
+    # #############################
+
+    # # Initial Predator parameters
+    # predator_initial_age = 0
+    # predator_max_age = 20
+    # predator_energy = 1.0
+    # predator_energy_decay = 0.01
+    # predator_cruise_speed = 0.4
+    # predator_hunt_speed = 1.5
+    # predator_energy_threshold = 0.6
+
+    # # Predator reproduction parameters
+    # predator_reproductive_age = 5
+    # predator_reproduction_rate = 0.5
+    # predator_reproduction_energy = 0.5
+    # predator_offspring_energy = 0.5
+    # predator_reproduction_distance = 5.0
+
+    # # Predator behavior parameters
+    # predator_visual_range = 25.0
+    # predator_eating_range = 1.0
+    # predator_energy_gain = 0.4
+
+    # #############################
+    # ## Intrusion parameters
+    # #############################
+    # intrusion_center = None  # Middle of the top edge
+    # intrusion_radius = None  # Radius of the exclusion zone
+
+    # Load the configuration
+    config = load_config("./config.json")
+
+    # Assign variables for easy access
+    simulation = config["simulation"]
+    reindeer = config["reindeer"]
+    predator = config["predator"]
+    intrusion = config["intrusion"]
+
+    # Assign individual variables for simulation parameters
+    grid_size = tuple(simulation["grid_size"])
+    num_reindeer = simulation["num_reindeer"]
+    num_predators = simulation["num_predators"]
+    max_steps = simulation["max_steps"]
+    food_regeneration_rate = simulation["food_regeneration_rate"]
+    reproduction_interval = simulation["reproduction_interval"]
 
     #############################
     ## Reindeer parameters
     #############################
-    # Reindeer initial parameters
-    reindeer_initial_age = 0
-    reindeer_max_speed = 1.0
-    reindeer_max_age = 15
-    reindeer_energy = 1.0
-    reindeer_grazing_speed = 0.2
-    reindeer_energy_decay = 0.02
+    # Assign individual variables for reindeer parameters
+    reindeer_initial_age = reindeer["initial"]["age"]
+    reindeer_max_speed = reindeer["initial"]["max_speed"]
+    reindeer_max_age = reindeer["initial"]["max_age"]
+    reindeer_energy = reindeer["initial"]["energy"]
+    reindeer_grazing_speed = reindeer["initial"]["grazing_speed"]
+    reindeer_energy_decay = reindeer["initial"]["energy_decay"]
 
-    # Reindeer reproduction parameters
-    reindeer_reproductive_age = 5
-    reindeer_reproduction_rate = 0.5
-    reindeer_reproduction_energy = 0.5
-    reindeer_reproduction_distance = 10.0
-    reindeer_offspring_energy = 0.5
+    ## Assign individual variables for reindeer reproduction parameters
+    reindeer_reproductive_age = reindeer["reproduction"]["reproductive_age"]
+    reindeer_reproduction_rate = reindeer["reproduction"]["reproduction_rate"]
+    reindeer_reproduction_energy = reindeer["reproduction"]["reproduction_energy"]
+    reindeer_reproduction_distance = reindeer["reproduction"]["reproduction_distance"]
+    reindeer_offspring_energy = reindeer["reproduction"]["offspring_energy"]
 
-    # Reindeer behavior parameters
-    reindeer_protected_range = 2.0
-    reindeer_visual_range = 15.0
-    reindeer_alert_range = 5.0
-    reindeer_grazing_rate = 0.2
+    # Assign individual variables for reindeer behavior parameters
+    reindeer_protected_range = reindeer["behavior"]["protected_range"]
+    reindeer_visual_range = reindeer["behavior"]["visual_range"]
+    reindeer_alert_range = reindeer["behavior"]["alert_range"]
+    reindeer_grazing_rate = reindeer["behavior"]["grazing_rate"]
 
     #############################
     ## Predator parameters
     #############################
 
-    # Initial Predator parameters
-    predator_initial_age = 0
-    predator_max_age = 20
-    predator_energy = 1.0
-    predator_energy_decay = 0.01
-    predator_cruise_speed = 0.4
-    predator_hunt_speed = 1.5
-    predator_energy_threshold = 0.6
+    # Assign individual variables for predator parameters
+    predator_initial_age = predator["initial"]["age"]
+    predator_max_age = predator["initial"]["max_age"]
+    predator_energy = predator["initial"]["energy"]
+    predator_energy_decay = predator["initial"]["energy_decay"]
+    predator_cruise_speed = predator["initial"]["cruise_speed"]
+    predator_hunt_speed = predator["initial"]["hunt_speed"]
+    predator_energy_threshold = predator["initial"]["energy_threshold"]
 
-    # Predator reproduction parameters
-    predator_reproductive_age = 5
-    predator_reproduction_rate = 0.5
-    predator_reproduction_energy = 0.5
-    predator_offspring_energy = 0.5
-    predator_reproduction_distance = 5.0
+    # Assign individual variables for predator reproduction parameters
+    predator_reproductive_age = predator["reproduction"]["reproductive_age"]
+    predator_reproduction_rate = predator["reproduction"]["reproduction_rate"]
+    predator_reproduction_energy = predator["reproduction"]["reproduction_energy"]
+    predator_offspring_energy = predator["reproduction"]["offspring_energy"]
+    predator_reproduction_distance = predator["reproduction"]["reproduction_distance"]
 
-    # Predator behavior parameters
-    predator_visual_range = 25.0
-    predator_eating_range = 1.0
-    predator_energy_gain = 0.4
+    # Assign individual variables for predator behavior parameters
+    predator_visual_range = predator["behavior"]["visual_range"]
+    predator_eating_range = predator["behavior"]["eating_range"]
+    predator_energy_gain = predator["behavior"]["energy_gain"]
 
     #############################
     ## Intrusion parameters
     #############################
-    intrusion_center = None  # Middle of the top edge
-    intrusion_radius = None  # Radius of the exclusion zone
+
+    # Assign individual variables for intrusion parameters
+    intrusion_center = intrusion["center"]
+    intrusion_radius = intrusion["radius"]
+
+    #############################
+    ## End of configuration
+    #############################
 
     # Initialize food grid
     food_grid = np.random.uniform(0.2, 0.8, grid_size)
@@ -306,6 +383,6 @@ def main():
 
 
 if __name__ == "__main__":
-    listener = keyboard.Listener(on_press=on_press)
-    listener.start()
+    # listener = keyboard.Listener(on_press=on_press)
+    # listener.start()
     main()

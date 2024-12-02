@@ -1,7 +1,14 @@
 import numpy as np
 import keyboard
+import json
 
 GRID_SIZE = (200, 300)
+
+
+def load_config(file_path):
+    """Load configuration from a JSON file."""
+    with open(file_path, "r") as file:
+        return json.load(file)
 
 
 def set_grid_size(grid_size):

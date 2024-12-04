@@ -198,7 +198,7 @@ def main():
         Predator(
             x=np.random.uniform(0, grid_size[0]),
             y=np.random.uniform(0, grid_size[1]),
-            age=np.random.randint(0, 15),  # Random age between 0 and 15
+            age=np.random.randint(0, 8),  # Random age between 0 and 15
             max_age=predator_max_age,
             energy=predator_energy,
             energy_decay=predator_energy_decay,

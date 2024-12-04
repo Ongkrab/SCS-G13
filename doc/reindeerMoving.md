@@ -16,7 +16,7 @@ flowchart TD
     predatorUpdateForce --> calculateTotalForce[Calculate Total Force, velocity, postion]
     hasPredator -- No --> findFoodLocation
     findFoodLocation --> calculateTotalForce
-    calculateTotalForce --> updateVelocity [Update velocity]
+    calculateTotalForce --> updateVelocity[Update velocity]
     updateVelocity --> updatePosition[Update position]
     updatePosition --> updateBoundary[Update boundary reflection]
     updateBoundary --> decreaseEnergy[Decrease Energy]

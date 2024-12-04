@@ -56,10 +56,10 @@ class Predator:
         """
         Flytta predatorn baserat på energi och närvaro av byte.
         """
-        # Predatorns tillstånd: Jakt eller patrullering
+        # Predator state: Hunt or patrolling
         direction = self.velocity / np.linalg.norm(self.velocity)
         if self.energy < self.energy_threshold:
-            # Hitta närmaste byte att jaga
+            # Find nearest prey
             target = None
             min_distance = float("inf")
 
@@ -70,7 +70,7 @@ class Predator:
                     target = p
 
             if target is not None:
-                # Jaga närmaste byte
+                # Hunt nearest prey
                 direction = target.position - self.position
                 self.velocity = (
                     direction / np.linalg.norm(direction)
@@ -102,9 +102,9 @@ class Predator:
         for p in prey:
             dist = distance(self.position, p.position)
             if dist < eating_range:
-                prey.remove(p)  # Ta bort bytet från listan
-                self.energy += energy_gain  # Få energi från att äta
-                self.energy = min(self.energy, 1.0)  # Energin får inte överstiga max
+                prey.remove(p)  # Remove prey
+                self.energy += energy_gain  # Get energy from eating
+                self.energy = min(self.energy, 1.0)  # Energy can't exceed max
                 break
 
     def reproduce(

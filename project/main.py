@@ -338,19 +338,17 @@ def main():
             reindeers = [obj for i, obj in enumerate(reindeers) if i not in indices_to_remove]
             death_by_culling.append([step, death_by_culling[-1][1]+num_to_remove])
             culling_statistics.append([step, num_to_remove])
-            #reindeers = reindeers[:-20]  # Remove the last 20 reindeer
 
         # Intrusion logic
         if step == max_steps // 2:
-            intrusion_center = (0, grid_size[1] // 2)#(0, grid_size[1] // 2)
+            intrusion_center = (0, grid_size[1] // 2)
             intrusion_radius = 40.0
 
         # Plot the environment
         if animation == True:
             plt.imshow(
-                #food_grid_with_intrusion,
                 food_grid,
-                cmap='Greens',#cmap=custom_cmap,
+                cmap='Greens',
                 extent=(0, grid_size[1], 0, grid_size[0]),
             )
             if intrusion_center is not None and intrusion_radius is not None:

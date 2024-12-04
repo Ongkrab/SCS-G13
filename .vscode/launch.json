@@ -12,6 +12,14 @@
             "program": "project/main.py",  // Specify the full path to your file
             "cwd": "${workspaceFolder}"
         },
+        {
+            "name": "Python",
+            "type": "python",
+            "request": "launch",
+            "stopOnEntry": true,
+            "program": "project/visualization.py",  // Specify the full path to your file
+            "cwd": "${workspaceFolder}"
+        },
     ]
 }
 

@@ -271,5 +271,5 @@ class Reindeer:
 
     def update_age(self):
         self.age += 1
-        if self.age > self.max_age:
-            self.energy = 0.0
+        #if self.age > self.max_age:
+        #    self.energy = 0.0

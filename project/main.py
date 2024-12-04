@@ -1,4 +1,5 @@
 import numpy as np
+import time
 import matplotlib.pyplot as plt
 from predator import Predator
 from reindeer import Reindeer
@@ -9,6 +10,7 @@ from pynput import keyboard
 
 stop_loop = False
 
+start_time = time.time()
 
 # Function to handle key press events
 def on_press(key):
@@ -97,6 +99,7 @@ def main():
     intrusion = config["intrusion"]
 
     # Assign individual variables for simulation parameters
+    animation = simulation["animation"]
     grid_size = tuple(simulation["grid_size"])
     num_reindeer = simulation["num_reindeer"]
     num_predators = simulation["num_predators"]
@@ -336,8 +339,10 @@ def main():
 
         if step % reproduction_interval == 0:
             # Culling of the herd
-            if int(len(reindeers))>culling_threshold:
+            if int(len(reindeers)) > culling_threshold:
                 num_to_remove = int(len(reindeers)*culling_rate)
+                if len(reindeers) - num_to_remove < culling_threshold:
+                    num_to_remove = len(reindeers) - culling_threshold
             else:
                 num_to_remove = 0
             # Randomly select indices to remove using numpy
@@ -372,43 +377,44 @@ def main():
         #     food_grid_with_intrusion = food_grid
 
         # Plot the environment
-        plt.imshow(
-            #food_grid_with_intrusion,
-            food_grid,
-            cmap='Greens',#cmap=custom_cmap,
-            extent=(0, grid_size[1], 0, grid_size[0]),
-        )
-        if intrusion_center is not None and intrusion_radius is not None:
-            circle = Circle((intrusion_center[1],intrusion_center[0]), intrusion_radius, color='grey', alpha=1)
-            plt.gca().add_artist(circle)
-        if reindeers:
-            reindeer_positions = np.array([r.position for r in reindeers])
-            plt.scatter(
-                reindeer_positions[:, 1],
-                reindeer_positions[:, 0],
-                c="blue",
-                label="Reindeer",
-                alpha=0.7,
+        if animation == True:
+            plt.imshow(
+                #food_grid_with_intrusion,
+                food_grid,
+                cmap='Greens',#cmap=custom_cmap,
+                extent=(0, grid_size[1], 0, grid_size[0]),
             )
-        if predators:
-            predator_positions = np.array([p.position for p in predators])
-            plt.scatter(
-                predator_positions[:, 1],
-                predator_positions[:, 0],
-                c="red",
-                label="Predators",
-                alpha=0.7,
-            )
-        plt.title(f"Step {step}")
-        plt.legend()
-        plt.pause(0.1)
-        plt.clf()
+            if intrusion_center is not None and intrusion_radius is not None:
+                circle = Circle((intrusion_center[1],intrusion_center[0]), intrusion_radius, color='grey', alpha=1)
+                plt.gca().add_artist(circle)
+            if reindeers:
+                reindeer_positions = np.array([r.position for r in reindeers])
+                plt.scatter(
+                    reindeer_positions[:, 1],
+                    reindeer_positions[:, 0],
+                    c="blue",
+                    label="Reindeer",
+                    alpha=0.7,
+                )
+            if predators:
+                predator_positions = np.array([p.position for p in predators])
+                plt.scatter(
+                    predator_positions[:, 1],
+                    predator_positions[:, 0],
+                    c="red",
+                    label="Predators",
+                    alpha=0.7,
+                )
+            plt.title(f"Step {step}")
+            plt.legend()
+            plt.pause(0.1)
+            plt.clf()
 
         # Stop if no reindeer are left
         if len(reindeers) == 0:
             print("All reindeer have been hunted.")
             break
-
+    print("--- %s seconds ---" % (time.time() - start_time))
     if stop_loop == False:
         plt.show()
     print("Simulation finished.")

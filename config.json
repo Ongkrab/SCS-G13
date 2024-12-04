@@ -3,11 +3,12 @@
       "grid_size": [140, 300],
       "num_reindeer": 200,
       "num_predators": 5,
-      "max_steps": 10000,
+      "max_steps": 100,
       "food_regeneration_rate": 0.003,
       "reproduction_interval": 35,
       "culling_rate": 0.1,
-      "culling_threshold": 111
+      "culling_threshold": 100,
+      "animation": true
     },
     "reindeer": {
       "initial": {

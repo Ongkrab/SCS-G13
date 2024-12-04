@@ -4,13 +4,16 @@ import matplotlib.pyplot as plt
 from predator import Predator
 from reindeer import Reindeer
 from matplotlib.patches import Circle
-#from matplotlib.colors import ListedColormap, BoundaryNorm
+import os
+
+# from matplotlib.colors import ListedColormap, BoundaryNorm
 from helper import *
 from pynput import keyboard
 
 stop_loop = False
 
 start_time = time.time()
+
 
 # Function to handle key press events
 def on_press(key):
@@ -90,7 +93,7 @@ def main():
     # intrusion_radius = None  # Radius of the exclusion zone
 
     # Load the configuration
-    config = load_config("./config_initial.json")
+    config = load_config("./config.json")
 
     # Assign variables for easy access
     simulation = config["simulation"]
@@ -99,7 +102,7 @@ def main():
     intrusion = config["intrusion"]
 
     # Assign individual variables for simulation parameters
-    animation = simulation["animation"]
+    isAnimate = simulation["is_animate"]
     grid_size = tuple(simulation["grid_size"])
     num_reindeer = simulation["num_reindeer"]
     num_predators = simulation["num_predators"]
@@ -216,13 +219,14 @@ def main():
     reindeer_population = []
     predator_population = []
     culling_statistics = []
-    death_by_culling = [[0,0]]
-    death_by_age = [[0,0]]
-    death_by_predator= [[0,0]]
-    death_by_starvation = [[0,0]]
+    death_by_culling = [[0, 0]]
+    death_by_age = [[0, 0]]
+    death_by_predator = [[0, 0]]
+    death_by_starvation = [[0, 0]]
 
     # Simulation loop
     for step in range(max_steps):
+        print(f"Step {step} out of {max_steps}", end="\r")
         if stop_loop:  # Check the flag
             print("Loop exited.")
             break
@@ -232,7 +236,7 @@ def main():
         food_grid = np.clip(food_grid, 0, 1)  # Ensure food values stay within [0, 1]
 
         # Move agents
-        temp_death_by_starvation=death_by_starvation[-1][1]
+        temp_death_by_starvation = death_by_starvation[-1][1]
         for reindeer in reindeers[:]:
             reindeer.move(
                 predators=predators,
@@ -252,7 +256,7 @@ def main():
                 temp_death_by_starvation += 1
         death_by_starvation.append([step, temp_death_by_starvation])
 
-        temp_death_by_predator=death_by_predator[-1][1]
+        temp_death_by_predator = death_by_predator[-1][1]
         temp_number_of_reindeers = len(reindeers)
         for predator in predators[:]:
             predator.move(
@@ -270,7 +274,9 @@ def main():
 
             if predator.energy <= 0:
                 predators.remove(predator)  # Remove dead predators
-        death_by_predator.append([step, temp_death_by_predator+temp_number_of_reindeers-len(reindeers)])
+        death_by_predator.append(
+            [step, temp_death_by_predator + temp_number_of_reindeers - len(reindeers)]
+        )
 
         # Save population counts
         reindeer_population.append(len(reindeers))
@@ -281,7 +287,7 @@ def main():
             temp_death_by_age = death_by_age[-1][1]
             for reindeer in reindeers[:]:
                 reindeer.update_age()
-                if reindeer.age>reindeer.max_age:
+                if reindeer.age > reindeer.max_age:
                     reindeers.remove(reindeer)
                     temp_death_by_age += 1
                 if np.random.rand() < reindeer.reproduction_rate:
@@ -327,7 +333,7 @@ def main():
         if step % reproduction_interval == 0:
             # Culling of the herd
             if int(len(reindeers)) > culling_threshold:
-                num_to_remove = int(len(reindeers)*culling_rate)
+                num_to_remove = int(len(reindeers) * culling_rate)
                 if len(reindeers) - num_to_remove < culling_threshold:
                     num_to_remove = len(reindeers) - culling_threshold
                 if len(reindeers) > max_reindeer_population:
@@ -335,11 +341,15 @@ def main():
             else:
                 num_to_remove = 0
             # Randomly select indices to remove using numpy
-            indices_to_remove = np.random.choice(len(reindeers), num_to_remove, replace=False)
+            indices_to_remove = np.random.choice(
+                len(reindeers), num_to_remove, replace=False
+            )
             # Remove the selected objects from the list
             objects_to_remove = [reindeers[i] for i in indices_to_remove]
-            reindeers = [obj for i, obj in enumerate(reindeers) if i not in indices_to_remove]
-            death_by_culling.append([step, death_by_culling[-1][1]+num_to_remove])
+            reindeers = [
+                obj for i, obj in enumerate(reindeers) if i not in indices_to_remove
+            ]
+            death_by_culling.append([step, death_by_culling[-1][1] + num_to_remove])
             culling_statistics.append([step, num_to_remove])
 
         # Intrusion logic
@@ -348,14 +358,19 @@ def main():
             intrusion_radius = 40.0
 
         # Plot the environment
-        if animation == True:
+        if isAnimate:
             plt.imshow(
                 food_grid,
-                cmap='Greens',
+                cmap="Greens",
                 extent=(0, grid_size[1], 0, grid_size[0]),
             )
             if intrusion_center is not None and intrusion_radius is not None:
-                circle = Circle((intrusion_center[1],intrusion_center[0]), intrusion_radius, color='grey', alpha=1)
+                circle = Circle(
+                    (intrusion_center[1], intrusion_center[0]),
+                    intrusion_radius,
+                    color="grey",
+                    alpha=1,
+                )
                 plt.gca().add_artist(circle)
             if reindeers:
                 reindeer_positions = np.array([r.position for r in reindeers])
@@ -387,37 +402,54 @@ def main():
     print("--- %s seconds ---" % (time.time() - start_time))
     if stop_loop == False:
         plt.show()
+
     print("Simulation finished.")
 
-    # Plot population dynamics
-    plt.figure()
-    plt.plot(reindeer_population, label="Reindeer Population", color="blue")
-    plt.plot(predator_population, label="Predator Population", color="red")
-    plt.xlabel("Time Step")
-    plt.ylabel("Population")
-    plt.title("Population Dynamics")
-    plt.legend()
-    plt.show()
+    # Save the results
+    current_time = time.strftime("%Y%m%d-%H%M%S")
+    result_folder_path = "results/" + current_time + "/"
+    reindeer_population = np.array(reindeer_population)
+    predator_population = np.array(predator_population)
+    death_by_age = np.array(death_by_age)
+    death_by_starvation = np.array(death_by_starvation)
+    death_by_predator = np.array(death_by_predator)
+    death_by_culling = np.array(death_by_culling)
+    culling_statistics = np.array(culling_statistics)
 
-    death_by_age=np.array(death_by_age)
-    death_by_starvation=np.array(death_by_starvation)
-    death_by_predator=np.array(death_by_predator)
-    death_by_culling=np.array(death_by_culling)
-    plt.plot(death_by_age[:, 0], death_by_age[:, 1], color="blue", label="Old age")
-    plt.plot(death_by_starvation[:, 0], death_by_starvation[:, 1], color="green", label="Starved")
-    plt.plot(death_by_predator[:, 0], death_by_predator[:, 1], color="red", label="Eaten")
-    plt.plot(death_by_culling[:, 0], death_by_culling[:, 1], color="orange", label="Culled")
-    plt.title("Cause of death")
-    plt.xlabel("Time Step")
-    plt.ylabel("Total amount")
-    plt.legend()
-    plt.show()
+    # Create result folder if it doesn't exist
+    if not os.path.exists(result_folder_path):
+        os.makedirs(result_folder_path)
 
-    culling_statistics=np.array(culling_statistics)
-    plt.plot(culling_statistics[:,0], culling_statistics[:,1])
-    plt.title("Culling statistics")
-    plt.xlabel("Time Step")
-    plt.ylabel("Amount culled each season")
-    plt.show()
+    # Save results to CSV files
+    # config.save()
+    with open(result_folder_path + "config.json", "w") as f:
+        json.dump(config, f)
+    np.savetxt(
+        result_folder_path + "reindeer_population.csv",
+        reindeer_population,
+        delimiter=",",
+    )
+    np.savetxt(
+        result_folder_path + "predator_population.csv",
+        predator_population,
+        delimiter=",",
+    )
+    np.savetxt(result_folder_path + "death_by_age.csv", death_by_age, delimiter=",")
+    np.savetxt(
+        result_folder_path + "death_by_starvation.csv",
+        death_by_starvation,
+        delimiter=",",
+    )
+    np.savetxt(
+        result_folder_path + "death_by_predator.csv", death_by_predator, delimiter=","
+    )
+    np.savetxt(
+        result_folder_path + "death_by_culling.csv", death_by_culling, delimiter=","
+    )
+    np.savetxt(
+        result_folder_path + "culling_statistics.csv", culling_statistics, delimiter=","
+    )
+
+
 if __name__ == "__main__":
     main()

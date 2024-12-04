@@ -90,7 +90,7 @@ def main():
     # intrusion_radius = None  # Radius of the exclusion zone
 
     # Load the configuration
-    config = load_config("./config.json")
+    config = load_config("./config_initial.json")
 
     # Assign variables for easy access
     simulation = config["simulation"]

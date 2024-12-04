@@ -111,6 +111,7 @@ def main():
     reproduction_interval = simulation["reproduction_interval"]
     culling_rate = simulation["culling_rate"]
     culling_threshold = simulation["culling_threshold"]
+    max_reindeer_population = simulation["max_reindeer_population"]
     #############################
     ## Reindeer parameters
     #############################
@@ -200,7 +201,7 @@ def main():
         Predator(
             x=np.random.uniform(0, grid_size[0]),
             y=np.random.uniform(0, grid_size[1]),
-            age=np.random.randint(0, 15),  # Random age between 0 and 15
+            age=np.random.randint(0, 8),  # Random age between 0 and 15
             max_age=predator_max_age,
             energy=predator_energy,
             energy_decay=predator_energy_decay,
@@ -335,10 +336,8 @@ def main():
                 num_to_remove = int(len(reindeers) * culling_rate)
                 if len(reindeers) - num_to_remove < culling_threshold:
                     num_to_remove = len(reindeers) - culling_threshold
-                if len(reindeers) > 300:
-                    num_to_remove = max(
-                        int(len(reindeers) * culling_rate), len(reindeers) - 300
-                    )
+                if len(reindeers) > max_reindeer_population:
+                    num_to_remove = max(int(len(reindeers)*culling_rate),len(reindeers)-max_reindeer_population)
             else:
                 num_to_remove = 0
             # Randomly select indices to remove using numpy

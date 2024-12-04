@@ -39,14 +39,14 @@
         "age": 0,
         "max_age": 12,
         "energy": 1.0,
-        "energy_decay": 0.01,
+        "energy_decay": 0.015,
         "cruise_speed": 0.4,
         "hunt_speed": 1.5,
         "energy_threshold": 0.6
       },
       "reproduction": {
         "reproductive_age": 3,
-        "reproduction_rate": 0.2,
+        "reproduction_rate": 0.175,
         "reproduction_energy": 0.4,
         "offspring_energy": 0.5,
         "reproduction_distance": 5.0

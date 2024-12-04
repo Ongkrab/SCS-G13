@@ -7,7 +7,9 @@
       "food_regeneration_rate": 0.0035,
       "reproduction_interval": 40,
       "culling_rate": 0.12,
-      "culling_threshold": 113
+      "culling_threshold": 100,
+      "max_reindeer_population": 300,
+      "animation": false
     },
     "reindeer": {
       "initial": {

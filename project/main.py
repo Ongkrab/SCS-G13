@@ -90,7 +90,7 @@ def main():
     # intrusion_radius = None  # Radius of the exclusion zone
 
     # Load the configuration
-    config = load_config("./config.json")
+    config = load_config("./config_initial.json")
 
     # Assign variables for easy access
     simulation = config["simulation"]
@@ -329,6 +329,8 @@ def main():
                 num_to_remove = int(len(reindeers)*culling_rate)
                 if len(reindeers) - num_to_remove < culling_threshold:
                     num_to_remove = len(reindeers) - culling_threshold
+                if len(reindeers) > 300:
+                    num_to_remove = max(int(len(reindeers)*culling_rate),len(reindeers)-300)
             else:
                 num_to_remove = 0
             # Randomly select indices to remove using numpy

@@ -174,20 +174,6 @@ def main():
     food_grid = np.random.uniform(0.2, 0.8, grid_size)
     set_grid_size(grid_size)
 
-    # Test a food grid with a single peak
-    # food_grid = np.zeros(grid_size)
-    # food_grid[20:40, 100:120] = np.random.uniform(0.5, 1.0, (20, 20))
-    # food_grid[80:100, 100:120] = np.random.uniform(0.5, 1.0, (20, 20))
-    # food_grid[20:40, 150:170] = np.random.uniform(0.5, 1.0, (20, 20))
-
-    # Create a custom colormap
-    # cmap = plt.cm.Greens  # Use Greens for positive values
-    # colors = cmap(np.linspace(0, 1, 256))  # Get the original colors
-    # colors[0] = np.array([0.5, 0.5, 0.5, 1])  # Replace the first color with gray (RGBA)
-    # custom_cmap = ListedColormap(colors)
-    # # Normalize values
-    # norm = BoundaryNorm([-0.1, 0, 1], ncolors=custom_cmap.N, clip=True)
-
     # Initialize agents with random ages
     reindeers = [
         Reindeer(
@@ -360,24 +346,6 @@ def main():
             intrusion_radius = 40.0
 
         # Plot the environment
-        # if intrusion_center is not None and intrusion_radius is not None:
-        #     # Skapa en mask för intrusionszonen
-        #     y, x = np.ogrid[: grid_size[0], : grid_size[1]]
-        #     mirrored_intrusion_center = (
-        #         grid_size[0] - 1 - intrusion_center[0],
-        #         intrusion_center[1],
-        #     )  # Invert x-axis for correct simulation coordinates
-        #     intrusion_mask = (x - mirrored_intrusion_center[1]) ** 2 + (
-        #         y - mirrored_intrusion_center[0]
-        #     ) ** 2 <= intrusion_radius**2
-        #     food_grid_with_intrusion = food_grid.copy()
-        #     food_grid_with_intrusion[intrusion_mask] = (
-        #         -0.1
-        #     )  # Mark intrusion area as dark gray in plot
-        # else:
-        #     food_grid_with_intrusion = food_grid
-
-        # Plot the environment
         if animation == True:
             plt.imshow(
                 #food_grid_with_intrusion,
@@ -451,6 +419,4 @@ def main():
     plt.ylabel("Amount culled each season")
     plt.show()
 if __name__ == "__main__":
-    # listener = keyboard.Listener(on_press=on_press)
-    # listener.start()
     main()

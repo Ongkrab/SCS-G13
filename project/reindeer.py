@@ -14,6 +14,7 @@ class Reindeer:
         reproductive_age,
         reproduction_rate,
         reproduction_energy,
+        energy_threshold,
         max_speed,
         grazing_speed,
     ):
@@ -39,6 +40,7 @@ class Reindeer:
         self.max_age = max_age
         self.reproduction_rate = reproduction_rate
         self.reproduction_energy = reproduction_energy
+        self.energy_threshold = energy_threshold # Energy threshold for increased food search
         # self.reproductive_age = 5
         # self.max_age = 15
         # self.reproduction_rate = 0.5
@@ -165,6 +167,8 @@ class Reindeer:
                 np.linalg.norm(target_position - self.position) + 1e-5
             )
             food_force *= 0.01
+            if self.energy < self.energy_threshold:
+                food_force *= 2
 
         # Combine all forces
         total_force = 0.5 * (
@@ -260,6 +264,7 @@ class Reindeer:
                 reproduction_energy=self.reproduction_energy,
                 max_speed=self.max_speed,
                 grazing_speed=self.grazing_speed,
+                energy_threshold=self.energy_threshold
             )
             offspring.energy = offspring_energy
 

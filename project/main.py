@@ -126,6 +126,7 @@ def main():
     reindeer_visual_range = reindeer["behavior"]["visual_range"]
     reindeer_alert_range = reindeer["behavior"]["alert_range"]
     reindeer_grazing_rate = reindeer["behavior"]["grazing_rate"]
+    reindeer_energy_threshold = reindeer["behavior"]["energy_threshold"]
 
     #############################
     ## Predator parameters
@@ -196,6 +197,7 @@ def main():
             reproduction_energy=reindeer_reproduction_energy,
             max_speed=reindeer_max_speed,
             grazing_speed=reindeer_grazing_speed,
+            energy_threshold=reindeer_energy_threshold,
         )
         for _ in range(num_reindeer)
     ]

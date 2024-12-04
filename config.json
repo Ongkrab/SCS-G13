@@ -27,7 +27,8 @@
         "protected_range": 2.0,
         "visual_range": 15.0,
         "alert_range": 5.0,
-        "grazing_rate": 0.2
+        "grazing_rate": 0.2,
+        "energy_threshold": 0.5
       }
     },
     "predator": {

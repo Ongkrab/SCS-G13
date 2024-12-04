@@ -351,6 +351,7 @@ def main():
             objects_to_remove = [reindeers[i] for i in indices_to_remove]
             reindeers = [obj for i, obj in enumerate(reindeers) if i not in indices_to_remove]
             death_by_culling.append([step, death_by_culling[-1][1]+num_to_remove])
+            culling_statistics.append([step, num_to_remove])
             #reindeers = reindeers[:-20]  # Remove the last 20 reindeer
 
         # Intrusion logic
@@ -441,6 +442,13 @@ def main():
     plt.xlabel("Time Step")
     plt.ylabel("Total amount")
     plt.legend()
+    plt.show()
+
+    culling_statistics=np.array(culling_statistics)
+    plt.plot(culling_statistics[:,0], culling_statistics[:,1])
+    plt.title("Culling statistics")
+    plt.xlabel("Time Step")
+    plt.ylabel("Amount culled each season")
     plt.show()
 if __name__ == "__main__":
     # listener = keyboard.Listener(on_press=on_press)

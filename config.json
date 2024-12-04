@@ -1,11 +1,13 @@
 {
     "simulation": {
-      "grid_size": [300, 300],
+      "grid_size": [140, 300],
       "num_reindeer": 200,
       "num_predators": 5,
       "max_steps": 10000,
       "food_regeneration_rate": 0.003,
-      "reproduction_interval": 35
+      "reproduction_interval": 35,
+      "culling_rate": 0.1,
+      "culling_threshold": 111
     },
     "reindeer": {
       "initial": {

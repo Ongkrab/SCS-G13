@@ -2,7 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from predator import Predator
 from reindeer import Reindeer
-from matplotlib.colors import ListedColormap, BoundaryNorm
+from matplotlib.patches import Circle
+#from matplotlib.colors import ListedColormap, BoundaryNorm
 from helper import *
 from pynput import keyboard
 
@@ -102,7 +103,8 @@ def main():
     max_steps = simulation["max_steps"]
     food_regeneration_rate = simulation["food_regeneration_rate"]
     reproduction_interval = simulation["reproduction_interval"]
-
+    culling_rate = simulation["culling_rate"]
+    culling_threshold = simulation["culling_threshold"]
     #############################
     ## Reindeer parameters
     #############################
@@ -176,12 +178,12 @@ def main():
     # food_grid[20:40, 150:170] = np.random.uniform(0.5, 1.0, (20, 20))
 
     # Create a custom colormap
-    cmap = plt.cm.Greens  # Use Greens for positive values
-    colors = cmap(np.linspace(0, 1, 256))  # Get the original colors
-    colors[0] = np.array([0.5, 0.5, 0.5, 1])  # Replace the first color with gray (RGBA)
-    custom_cmap = ListedColormap(colors)
-    # Normalize values
-    norm = BoundaryNorm([-0.1, 0, 1], ncolors=custom_cmap.N, clip=True)
+    # cmap = plt.cm.Greens  # Use Greens for positive values
+    # colors = cmap(np.linspace(0, 1, 256))  # Get the original colors
+    # colors[0] = np.array([0.5, 0.5, 0.5, 1])  # Replace the first color with gray (RGBA)
+    # custom_cmap = ListedColormap(colors)
+    # # Normalize values
+    # norm = BoundaryNorm([-0.1, 0, 1], ncolors=custom_cmap.N, clip=True)
 
     # Initialize agents with random ages
     reindeers = [
@@ -223,6 +225,11 @@ def main():
     # Data storage
     reindeer_population = []
     predator_population = []
+    culling_statistics = []
+    death_by_culling = [[0,0]]
+    death_by_age = [[0,0]]
+    death_by_predator= [[0,0]]
+    death_by_starvation = [[0,0]]
 
     # Simulation loop
     for step in range(max_steps):
@@ -235,6 +242,7 @@ def main():
         food_grid = np.clip(food_grid, 0, 1)  # Ensure food values stay within [0, 1]
 
         # Move agents
+        temp_death_by_starvation=death_by_starvation[-1][1]
         for reindeer in reindeers[:]:
             reindeer.move(
                 predators=predators,
@@ -251,7 +259,11 @@ def main():
             )  # Faster grazing
             if reindeer.energy <= 0:
                 reindeers.remove(reindeer)  # Remove dead reindeer
+                temp_death_by_starvation += 1
+        death_by_starvation.append([step, temp_death_by_starvation])
 
+        temp_death_by_predator=death_by_predator[-1][1]
+        temp_number_of_reindeers = len(reindeers)
         for predator in predators[:]:
             predator.move(
                 prey=reindeers,
@@ -268,6 +280,7 @@ def main():
 
             if predator.energy <= 0:
                 predators.remove(predator)  # Remove dead predators
+        death_by_predator.append([step, temp_death_by_predator+temp_number_of_reindeers-len(reindeers)])
 
         # Save population counts
         reindeer_population.append(len(reindeers))
@@ -275,8 +288,12 @@ def main():
 
         # Reproduction every reproduction_interval steps
         if step % reproduction_interval == 0:
+            temp_death_by_age = death_by_age[-1][1]
             for reindeer in reindeers[:]:
                 reindeer.update_age()
+                if reindeer.age>reindeer.max_age:
+                    reindeers.remove(reindeer)
+                    temp_death_by_age += 1
                 if np.random.rand() < reindeer.reproduction_rate:
                     reindeer.reproduce(
                         reindeers=reindeers,
@@ -285,6 +302,7 @@ def main():
                         exclusion_center=intrusion_center,
                         exclusion_radius=intrusion_radius,
                     )
+            death_by_age.append([step, temp_death_by_age])
 
             for predator in predators[:]:
                 predator.update_age()
@@ -300,47 +318,69 @@ def main():
             if len(predators) == 0:
                 predators = [
                     Predator(
-                        np.random.uniform(0, grid_size[0]),
-                        np.random.uniform(0, grid_size[1]),
+                        x=np.random.uniform(0, grid_size[0]),
+                        y=np.random.uniform(0, grid_size[1]),
                         age=np.random.randint(0, 15),  # Random age between 0 and 15
-                        energy_decay=0.01,
+                        max_age=predator_max_age,
+                        energy=predator_energy,
+                        energy_decay=predator_energy_decay,
+                        reproductive_age=predator_reproductive_age,
+                        reproduction_rate=predator_reproduction_rate,
+                        reproduction_energy=predator_reproduction_energy,
+                        cruise_speed=predator_cruise_speed,
+                        hunt_speed=predator_hunt_speed,
+                        energy_threshold=predator_energy_threshold,
                     )
                     for _ in range(num_predators)
                 ]
 
         if step % reproduction_interval == 0:
             # Culling of the herd
-            reindeers = reindeers[:-20]  # Remove the last 20 reindeer
+            if int(len(reindeers))>culling_threshold:
+                num_to_remove = int(len(reindeers)*culling_rate)
+            else:
+                num_to_remove = 0
+            # Randomly select indices to remove using numpy
+            indices_to_remove = np.random.choice(len(reindeers), num_to_remove, replace=False)
+            # Remove the selected objects from the list
+            objects_to_remove = [reindeers[i] for i in indices_to_remove]
+            reindeers = [obj for i, obj in enumerate(reindeers) if i not in indices_to_remove]
+            death_by_culling.append([step, death_by_culling[-1][1]+num_to_remove])
+            #reindeers = reindeers[:-20]  # Remove the last 20 reindeer
 
         # Intrusion logic
         if step == max_steps // 2:
-            intrusion_center = (0, grid_size[1] // 2)
+            intrusion_center = (0, grid_size[1] // 2)#(0, grid_size[1] // 2)
             intrusion_radius = 40.0
 
         # Plot the environment
-        if intrusion_center is not None and intrusion_radius is not None:
-            # Skapa en mask för intrusionszonen
-            y, x = np.ogrid[: grid_size[0], : grid_size[1]]
-            mirrored_intrusion_center = (
-                grid_size[0] - 1 - intrusion_center[0],
-                intrusion_center[1],
-            )  # Invert x-axis for correct simulation coordinates
-            intrusion_mask = (x - mirrored_intrusion_center[1]) ** 2 + (
-                y - mirrored_intrusion_center[0]
-            ) ** 2 <= intrusion_radius**2
-            food_grid_with_intrusion = food_grid.copy()
-            food_grid_with_intrusion[intrusion_mask] = (
-                -0.1
-            )  # Mark intrusion area as dark gray in plot
-        else:
-            food_grid_with_intrusion = food_grid
+        # if intrusion_center is not None and intrusion_radius is not None:
+        #     # Skapa en mask för intrusionszonen
+        #     y, x = np.ogrid[: grid_size[0], : grid_size[1]]
+        #     mirrored_intrusion_center = (
+        #         grid_size[0] - 1 - intrusion_center[0],
+        #         intrusion_center[1],
+        #     )  # Invert x-axis for correct simulation coordinates
+        #     intrusion_mask = (x - mirrored_intrusion_center[1]) ** 2 + (
+        #         y - mirrored_intrusion_center[0]
+        #     ) ** 2 <= intrusion_radius**2
+        #     food_grid_with_intrusion = food_grid.copy()
+        #     food_grid_with_intrusion[intrusion_mask] = (
+        #         -0.1
+        #     )  # Mark intrusion area as dark gray in plot
+        # else:
+        #     food_grid_with_intrusion = food_grid
 
         # Plot the environment
         plt.imshow(
-            food_grid_with_intrusion,
-            cmap=custom_cmap,
+            #food_grid_with_intrusion,
+            food_grid,
+            cmap='Greens',#cmap=custom_cmap,
             extent=(0, grid_size[1], 0, grid_size[0]),
         )
+        if intrusion_center is not None and intrusion_radius is not None:
+            circle = Circle((intrusion_center[1],intrusion_center[0]), intrusion_radius, color='grey', alpha=1)
+            plt.gca().add_artist(circle)
         if reindeers:
             reindeer_positions = np.array([r.position for r in reindeers])
             plt.scatter(
@@ -369,8 +409,8 @@ def main():
             print("All reindeer have been hunted.")
             break
 
-    plt.show()
-
+    if stop_loop == False:
+        plt.show()
     print("Simulation finished.")
 
     # Plot population dynamics
@@ -383,7 +423,19 @@ def main():
     plt.legend()
     plt.show()
 
-
+    death_by_age=np.array(death_by_age)
+    death_by_starvation=np.array(death_by_starvation)
+    death_by_predator=np.array(death_by_predator)
+    death_by_culling=np.array(death_by_culling)
+    plt.plot(death_by_age[:, 0], death_by_age[:, 1], color="blue", label="Old age")
+    plt.plot(death_by_starvation[:, 0], death_by_starvation[:, 1], color="green", label="Starved")
+    plt.plot(death_by_predator[:, 0], death_by_predator[:, 1], color="red", label="Eaten")
+    plt.plot(death_by_culling[:, 0], death_by_culling[:, 1], color="orange", label="Culled")
+    plt.title("Cause of death")
+    plt.xlabel("Time Step")
+    plt.ylabel("Total amount")
+    plt.legend()
+    plt.show()
 if __name__ == "__main__":
     # listener = keyboard.Listener(on_press=on_press)
     # listener.start()

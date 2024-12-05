@@ -5,6 +5,7 @@ from predator import Predator
 from reindeer import Reindeer
 from matplotlib.patches import Circle
 import os
+import argparse
 
 # from matplotlib.colors import ListedColormap, BoundaryNorm
 from helper import *
@@ -13,6 +14,8 @@ from pynput import keyboard
 stop_loop = False
 
 start_time = time.time()
+CONFIG_PATH = "./config.json"
+RESULT_PATH = "./results/"
 
 
 # Function to handle key press events
@@ -29,71 +32,8 @@ listener.start()
 
 
 def main():
-    # # Simulation parameters
-    # grid_size = (200, 300)  # Height, Width
-    # num_reindeer = 200  # Increased number of reindeer
-    # num_predators = 5
-    # max_steps = 10000
-    # food_regeneration_rate = 0.003  # Slightly faster food regeneration
-    # reproduction_interval = 35  # Reproduction occurs less frequently
-
-    # #############################
-    # ## Reindeer parameters
-    # #############################
-    # # Reindeer initial parameters
-    # reindeer_initial_age = 0
-    # reindeer_max_speed = 1.0
-    # reindeer_max_age = 15
-    # reindeer_energy = 1.0
-    # reindeer_grazing_speed = 0.2
-    # reindeer_energy_decay = 0.02
-
-    # # Reindeer reproduction parameters
-    # reindeer_reproductive_age = 5
-    # reindeer_reproduction_rate = 0.5
-    # reindeer_reproduction_energy = 0.5
-    # reindeer_reproduction_distance = 10.0
-    # reindeer_offspring_energy = 0.5
-
-    # # Reindeer behavior parameters
-    # reindeer_protected_range = 2.0
-    # reindeer_visual_range = 15.0
-    # reindeer_alert_range = 5.0
-    # reindeer_grazing_rate = 0.2
-
-    # #############################
-    # ## Predator parameters
-    # #############################
-
-    # # Initial Predator parameters
-    # predator_initial_age = 0
-    # predator_max_age = 20
-    # predator_energy = 1.0
-    # predator_energy_decay = 0.01
-    # predator_cruise_speed = 0.4
-    # predator_hunt_speed = 1.5
-    # predator_energy_threshold = 0.6
-
-    # # Predator reproduction parameters
-    # predator_reproductive_age = 5
-    # predator_reproduction_rate = 0.5
-    # predator_reproduction_energy = 0.5
-    # predator_offspring_energy = 0.5
-    # predator_reproduction_distance = 5.0
-
-    # # Predator behavior parameters
-    # predator_visual_range = 25.0
-    # predator_eating_range = 1.0
-    # predator_energy_gain = 0.4
-
-    # #############################
-    # ## Intrusion parameters
-    # #############################
-    # intrusion_center = None  # Middle of the top edge
-    # intrusion_radius = None  # Radius of the exclusion zone
-
     # Load the configuration
-    config = load_config("./config.json")
+    config = load_config(CONFIG_PATH)
 
     # Assign variables for easy access
     simulation = config["simulation"]
@@ -170,6 +110,7 @@ def main():
     intrusion_center = intrusion["center"]
     intrusion_radius = intrusion["radius"]
 
+    print("Configuration loaded.")
     #############################
     ## End of configuration
     #############################
@@ -223,6 +164,9 @@ def main():
     death_by_age = [[0, 0]]
     death_by_predator = [[0, 0]]
     death_by_starvation = [[0, 0]]
+
+    print("Initialized Complete.")
+    startTime = time.time()
 
     # Simulation loop
     for step in range(max_steps):
@@ -337,7 +281,10 @@ def main():
                 if len(reindeers) - num_to_remove < culling_threshold:
                     num_to_remove = len(reindeers) - culling_threshold
                 if len(reindeers) > max_reindeer_population:
-                    num_to_remove = max(int(len(reindeers)*culling_rate),len(reindeers)-max_reindeer_population)
+                    num_to_remove = max(
+                        int(len(reindeers) * culling_rate),
+                        len(reindeers) - max_reindeer_population,
+                    )
             else:
                 num_to_remove = 0
             # Randomly select indices to remove using numpy
@@ -399,15 +346,16 @@ def main():
         if len(reindeers) == 0:
             print("All reindeer have been hunted.")
             break
-    print("--- %s seconds ---" % (time.time() - start_time))
+
     if stop_loop == False:
         plt.show()
 
-    print("Simulation finished.")
+    endTime = time.time()
+    print(f"Simulation finished. {endTime - startTime} seconds elapsed.")
 
     # Save the results
     current_time = time.strftime("%Y%m%d-%H%M%S")
-    result_folder_path = "results/" + current_time + "/"
+    result_folder_path = RESULT_PATH + current_time + "/"
     reindeer_population = np.array(reindeer_population)
     predator_population = np.array(predator_population)
     death_by_age = np.array(death_by_age)
@@ -452,4 +400,25 @@ def main():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run script with a config file.")
+    parser.add_argument(
+        "--config",
+        type=str,
+        required=False,
+        help="Path to the config file",
+        default="./config.json",
+    )
+    parser.add_argument(
+        "--result",
+        type=str,
+        required=False,
+        help="Path to store result file",
+        default="./results/",
+    )
+    args = parser.parse_args()
+    CONFIG_PATH = args.config
+    RESULT_PATH = args.result
+    print(f"Config path: {CONFIG_PATH}")
+    print(f"Result path: {RESULT_PATH}")
+    print("Starting simulation...")
     main()

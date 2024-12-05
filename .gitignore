@@ -1,2 +1,6 @@
 /results
+/build
+/dist
+/hello
 *.pyc
+*.spec

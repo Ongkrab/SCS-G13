@@ -40,7 +40,9 @@ class Reindeer:
         self.max_age = max_age
         self.reproduction_rate = reproduction_rate
         self.reproduction_energy = reproduction_energy
-        self.energy_threshold = energy_threshold # Energy threshold for increased food search
+        self.energy_threshold = (
+            energy_threshold  # Energy threshold for increased food search
+        )
         # self.reproductive_age = 5
         # self.max_age = 15
         # self.reproduction_rate = 0.5
@@ -257,16 +259,15 @@ class Reindeer:
                 y=offspring_position[1],
                 age=0,
                 max_age=self.max_age,
-                energy=self.energy,
+                energy=offspring_energy,
                 energy_decay=self.energy_decay,
                 reproductive_age=self.reproductive_age,
                 reproduction_rate=self.reproduction_rate,
                 reproduction_energy=self.reproduction_energy,
                 max_speed=self.max_speed,
                 grazing_speed=self.grazing_speed,
-                energy_threshold=self.energy_threshold
+                energy_threshold=self.energy_threshold,
             )
-            offspring.energy = offspring_energy
 
             # Add offspring to the simulation
             reindeers.append(offspring)
@@ -276,5 +277,5 @@ class Reindeer:
 
     def update_age(self):
         self.age += 1
-        #if self.age > self.max_age:
+        # if self.age > self.max_age:
         #    self.energy = 0.0

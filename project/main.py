@@ -282,10 +282,11 @@ def main():
                 if len(reindeers) - num_to_remove < culling_threshold:
                     num_to_remove = len(reindeers) - culling_threshold
                 if len(reindeers) > max_reindeer_population:
-                    num_to_remove = max(
-                        int(len(reindeers) * culling_rate),
-                        len(reindeers) - max_reindeer_population,
-                    )
+                    # num_to_remove = max(
+                    #     int(len(reindeers) * culling_rate),
+                    #     len(reindeers) - max_reindeer_population,
+                    #)
+                    num_to_remove = int(((len(reindeers) - max_reindeer_population)/100+1)*culling_rate*len(reindeers))
             else:
                 num_to_remove = 0
             # Randomly select indices to remove using numpy
@@ -341,6 +342,7 @@ def main():
             plt.title(f"Step {step}")
             plt.legend()
             plt.pause(0.1)
+            #plt.pause(0.1)
             plt.clf()
 
         # Stop if no reindeer are left

@@ -341,7 +341,7 @@ def main():
                 )
             plt.title(f"Step {step}")
             plt.legend()
-            #plt.pause(0.1)
+            plt.pause(0.00001)
             plt.clf()
 
         # Stop if no reindeer are left
@@ -349,8 +349,8 @@ def main():
             print("All reindeer have been hunted.")
             break
 
-    if stop_loop == False:
-        plt.show()
+    # if stop_loop == False:
+    #     plt.show()
 
     endTime = time.time()
     print(f"Simulation finished. {endTime - startTime} seconds elapsed.")

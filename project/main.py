@@ -341,7 +341,6 @@ def main():
                 )
             plt.title(f"Step {step}")
             plt.legend()
-            plt.pause(0.1)
             #plt.pause(0.1)
             plt.clf()
 

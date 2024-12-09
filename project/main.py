@@ -55,6 +55,7 @@ def main():
     culling_threshold = simulation["culling_threshold"]
     max_reindeer_population = simulation["max_reindeer_population"]
     isPlotResults = simulation["is_plot_results"]
+    capture_interval = simulation["capture_interval"]
     #############################
     ## Reindeer parameters
     #############################
@@ -373,7 +374,7 @@ def main():
             plt.pause(0.00001)
             plt.clf()
 
-        if step % 10 == 0:
+        if step % capture_interval == 0:
             plot_simulation_step(
                 grid_size,
                 intrusion_center,

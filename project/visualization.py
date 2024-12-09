@@ -5,7 +5,7 @@ import os
 from helper import *
 
 ROOT_PATH = "./results/"
-FOLDER_NAME_DEFAULT = "20241209-114448"
+FOLDER_NAME_DEFAULT = "20241209-142635"
 IMAGE_FOLDER_NAME = "images"
 
 
@@ -32,8 +32,8 @@ def create_population_dynamic_plot(
         )
     if len(predator_reintroduction) > 0:
         plt.scatter(
-            predator_reintroduction[0],
-            predator_reintroduction[1],
+            predator_reintroduction[:, 0],
+            predator_reintroduction[:, 1],
             c="black",
             label="Predator reintroduced",
             alpha=1,
@@ -160,6 +160,53 @@ def create_predator_death_by_age(
     plt.show()
 
 
+def reindeer_clustering_coefficient_plot(
+    reindeer_clustering_coefficient,
+    reindeer_population,
+    predator_population,
+    latest_step,
+    max_steps,
+    is_save=False,
+    image_folder_path="",
+):
+    cluster_color = "tab:brown"
+    fig, ax1 = plt.subplots()
+    ax1.set_xlabel("Time Step")
+    ax1.set_ylabel("Clustering coefficient")
+    ax1.plot(
+        reindeer_clustering_coefficient,
+        label="Reindeer Clustering Coefficient",
+        color=cluster_color,
+    )
+    ax1.tick_params(axis="y", labelcolor=cluster_color)
+
+    ax2 = ax1.twinx()
+    ax2.plot(reindeer_population, label="Reindeer Population", color="blue")
+    ax2.plot(
+        predator_population,
+        label="Predator Population",
+        color="orange",
+    )
+    ax2.set_ylabel("Number of Population")
+
+    if latest_step > max_steps / 2:
+        plt.axvline(
+            x=max_steps / 2,
+            color="grey",
+            linestyle="--",
+            linewidth=2,
+            label="Intrusion added",
+        )
+
+    fig.tight_layout()
+
+    plt.title("Reindeer clustering coefficient")
+    plt.legend()
+    if is_save:
+        plt.savefig(image_folder_path + "reindeer_clustering_coefficient.png")
+    plt.show()
+
+
 def visualize(root_path=ROOT_PATH, folder_name=FOLDER_NAME_DEFAULT):
     result_folder_path = root_path + folder_name + "/"
     config_path = result_folder_path + "config.json"
@@ -190,6 +237,11 @@ def visualize(root_path=ROOT_PATH, folder_name=FOLDER_NAME_DEFAULT):
     culling_statistics = genfromtxt(
         result_folder_path + "culling_statistics.csv", delimiter=","
     )
+    reindeer_clustering_coeefficient = genfromtxt(
+        result_folder_path + "reindeer_clustering_coefficient.csv", delimiter=","
+    )
+
+    predator_reintroduction = predator_reintroduction.reshape(-1, 2)
 
     latest_step = len(reindeer_population)
     config = load_config(config_path)
@@ -228,6 +280,16 @@ def visualize(root_path=ROOT_PATH, folder_name=FOLDER_NAME_DEFAULT):
     )
     create_culling_statistics_plot(
         culling_statistics, latest_step, max_steps, True, image_folder_path
+    )
+
+    reindeer_clustering_coefficient_plot(
+        reindeer_clustering_coeefficient,
+        reindeer_population,
+        predator_population,
+        latest_step,
+        max_steps,
+        True,
+        image_folder_path,
     )
 
 

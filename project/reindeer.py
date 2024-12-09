@@ -50,6 +50,9 @@ class Reindeer:
         self.energy_decay = energy_decay
         self.fleeing = False
 
+    def get_position(self):
+        return self.position
+
     def move(
         self,
         food_grid,

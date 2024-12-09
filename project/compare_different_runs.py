@@ -28,7 +28,7 @@ def create_population_dynamic_plot_multi_run(
     :param image_folder_path: Path to save the image.
     """
 
-    plt.figure(figsize=(4, 6))
+    plt.figure(figsize=(12, 8))
 
     for i, folder_name in enumerate(FOLDER_NAMES):
 
@@ -52,11 +52,10 @@ def create_population_dynamic_plot_multi_run(
     plt.xlabel("Time Step")
     plt.ylabel("Population")
     plt.title("Population Dynamics")
-    plt.legend(
-        loc="upper left", bbox_to_anchor=(1.0, 1), borderaxespad=0, frameon=False
-    )
-    plt.show()
+    plt.legend()
     plt.tight_layout(rect=[0, 0, 0.85, 1])
+    plt.show()
+
 
 
 if __name__ == "__main__":

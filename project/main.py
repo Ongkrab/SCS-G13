@@ -187,6 +187,8 @@ def main():
     death_by_starvation = [[0, 0]]
     predator_death_by_age = [[0, 0]]
     predator_death_by_starvation = [[0, 0]]
+    reindeer_clusterings_coefficient = np.zeros(max_steps)
+
     print("Initialized Complete.")
     startTime = time.time()
 
@@ -345,10 +347,24 @@ def main():
             if intrusion_center_relative == None:
                 intrusion_center = None
             else:
-                intrusion_center = (intrusion_center_relative[0] * grid_size[0], \
-                                    intrusion_center_relative[1] * grid_size[1])
+                intrusion_center = (
+                    intrusion_center_relative[0] * grid_size[0],
+                    intrusion_center_relative[1] * grid_size[1],
+                )
 
             intrusion_radius = intrusion["radius"]
+
+        # Calcualte reindeer clustering
+        reindeer_positions_x = np.array([r.get_position()[0] for r in reindeers])
+        reindeer_positions_y = np.array([r.get_position()[1] for r in reindeers])
+
+        reindeer_clusterings_coefficient[step] = global_clustering(
+            reindeer_positions_x,
+            reindeer_positions_y,
+            reindeer_protected_range,
+            grid_size[0],
+        )
+
 
         # Plot the environment
         if isAnimate:
@@ -409,17 +425,23 @@ def main():
     #     plt.show()
 
     endTime = time.time()
-    print(f"Simulation finished. {endTime - startTime} seconds elapsed.")
+    difference = endTime - startTime
+    minutes = difference // 60
+    seconds = difference % 60
+    print(
+        f"Simulation finished. {endTime - startTime} seconds elapsed. ({minutes} minutes and {seconds} seconds) "
+    )
 
     # Save the results
 
     reindeer_population = np.array(reindeer_population)
-    predator_population = np.array(predator_population)
+    reindeer_clusterings_coefficient = np.array(reindeer_clusterings_coefficient)
     death_by_age = np.array(death_by_age)
     death_by_starvation = np.array(death_by_starvation)
     death_by_predator = np.array(death_by_predator)
     death_by_culling = np.array(death_by_culling)
     culling_statistics = np.array(culling_statistics)
+    predator_population = np.array(predator_population)
     predator_reintroduction = np.array(predator_reintroduction)
     predator_death_by_starvation = np.array(predator_death_by_starvation)
     predator_death_by_age = np.array(predator_death_by_age)
@@ -428,6 +450,7 @@ def main():
     # config.save()
     with open(result_folder_path + "config.json", "w") as f:
         json.dump(config, f)
+
     np.savetxt(
         result_folder_path + "reindeer_population.csv",
         reindeer_population,
@@ -466,6 +489,11 @@ def main():
     np.savetxt(
         result_folder_path + "predator_death_by_starvation.csv",
         predator_death_by_starvation,
+        delimiter=",",
+    )
+    np.savetxt(
+        result_folder_path + "reindeer_clustering_coefficient.csv",
+        reindeer_clusterings_coefficient,
         delimiter=",",
     )
 

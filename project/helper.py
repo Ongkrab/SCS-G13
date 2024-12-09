@@ -1,6 +1,7 @@
 import numpy as np
 import keyboard
 import json
+from scipy.spatial import Voronoi
 
 GRID_SIZE = (200, 300)
 
@@ -64,3 +65,89 @@ def on_press(key):
             return False  # Stop the listener
     except Exception as e:
         print(f"Error: {e}")
+
+
+def area_polygon(vertices):
+    """
+    Function to calculate the area of a Voronoi region given its vertices.
+
+    Parameters
+    ==========
+    vertices : Coordinates (array, 2 dimensional).
+    """
+
+    N, dim = vertices.shape
+
+    # dim is 2.
+    # Vertices are listed consecutively.
+
+    A = 0
+
+    for i in range(N - 1):
+        # Below is the formula of the area of a triangle given the vertices.
+        A += np.abs(
+            vertices[-1, 0] * (vertices[i, 1] - vertices[i + 1, 1])
+            + vertices[i, 0] * (vertices[i + 1, 1] - vertices[-1, 1])
+            + vertices[i + 1, 0] * (vertices[-1, 1] - vertices[i, 1])
+        )
+
+    A *= 0.5
+
+    return A
+
+
+def global_clustering(x, y, Rf, L):
+    """
+    Function to calculate the global alignment coefficient.
+
+    Parameters
+    ==========
+    x, y : Positions.
+    Rf : Flocking radius.
+    L : Dimension of the squared arena.
+    """
+
+    N = np.size(x)
+
+    # Use the replicas of all points to calculate Voronoi for
+    # a more precise estimate.
+    points = np.zeros([9 * N, 2])
+
+    for i in range(3):
+        for j in range(3):
+            s = 3 * i + j
+            points[s * N : (s + 1) * N, 0] = x + (j - 1) * L
+            points[s * N : (s + 1) * N, 1] = y + (i - 1) * L
+
+    # The format of points is the one needed by Voronoi.
+    # points[:, 0] contains the x coordinates
+    # points[:, 1] contains the y coordinates
+
+    vor = Voronoi(points)
+    """
+    vertices = vor.vertices  # Voronoi vertices.
+    regions = vor.regions  # Region list. 
+    # regions[i]: list of the vertices indices for region i.
+    # If -1 is listed: the region is open (includes point at infinity).
+    point_region = vor.point_region  # Region associated to input point.
+    """
+
+    # Consider only regions of original set of points (no replicas).
+    list_regions = vor.point_region[4 * N : 5 * N]
+
+    c = 0
+
+    for i in list_regions:
+        indices = vor.regions[i]
+        # print(f'indices = {indices}')
+        if len(indices) > 0:
+            if np.size(np.where(np.array(indices) == -1)[0]) == 0:
+                # Region is finite.
+                # Calculate area.
+                A = area_polygon(vor.vertices[indices, :])
+                if A < np.pi * Rf**2:
+                    c += 1
+
+    c = c / N
+
+    return c

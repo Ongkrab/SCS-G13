@@ -123,7 +123,7 @@ def create_death_plot(
     # Interpolate data for death_by_age
     temp_death_by_age=[]
     for i in range(len(death_by_age)-1):
-            for j in range(death_by_age[i][0],death_by_age[i+1][0]):
+            for j in range(int(death_by_age[i][0]),int(death_by_age[i+1][0])):
                 temp_death_by_age.append([j,death_by_age[i][1]+(j-death_by_age[i][0])*(death_by_age[i+1][1]-death_by_age[i][1])/(death_by_age[i+1][0]-death_by_age[i][0])])
     temp_death_by_age=np.array(temp_death_by_age)
     df = pd.DataFrame({'x': temp_death_by_age[:, 0], 'y': temp_death_by_age[:, 1]})
@@ -134,7 +134,7 @@ def create_death_plot(
     # Interpolate data for death_by_culling
     temp_death_by_culling=[]
     for i in range(len(death_by_culling)-1):
-            for j in range(death_by_culling[i][0],death_by_culling[i+1][0]):
+            for j in range(int(death_by_culling[i][0]),int(death_by_culling[i+1][0])):
                 temp_death_by_culling.append([j,death_by_culling[i][1]+(j-death_by_culling[i][0])*(death_by_culling[i+1][1]-death_by_culling[i][1])/(death_by_culling[i+1][0]-death_by_culling[i][0])])
     temp_death_by_culling=np.array(temp_death_by_culling)
     df = pd.DataFrame({'x': temp_death_by_culling[:, 0], 'y': temp_death_by_culling[:, 1]})

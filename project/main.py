@@ -56,6 +56,10 @@ def main():
     max_reindeer_population = simulation["max_reindeer_population"]
     isPlotResults = simulation["is_plot_results"]
     capture_interval = simulation["capture_interval"]
+    set_seed = simulation["set_seed"]
+    seed_number = simulation["seed_number"]
+    if set_seed == True:
+        np.random.seed(seed_number)
     #############################
     ## Reindeer parameters
     #############################

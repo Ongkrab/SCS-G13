@@ -9,7 +9,9 @@
       "culling_rate": 0.12,
       "culling_threshold": 100,
       "max_reindeer_population": 300,
-      "is_animate": true
+      "is_animate": false,
+      "is_plot_results": true,
+      "capture_interval": 100
     },
     "reindeer": {
       "initial": {

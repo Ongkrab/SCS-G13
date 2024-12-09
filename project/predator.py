@@ -76,11 +76,15 @@ class Predator:
                     direction / np.linalg.norm(direction)
                 ) * self.hunt_speed
             else:
-                # No prey in sight, continue patrolling
-                # direction += np.random.normal(0, std_dev, 2)  # Gaussian adjustment #TODO: Walking direction
+                # No prey in sight: Move towards the center of the prey herd, calculated as the median position
+
+                prey_positions = np.array([p.position for p in prey])
+                median_position = np.median(prey_positions, axis=0)
+                direction = median_position - self.position
                 self.velocity = (
                     direction / np.linalg.norm(direction)
-                ) * self.hunt_speed
+                ) * self.hunt_speed 
+                
         else:
             # Patrolling: Adjust direction with Gaussian noise
             # direction += np.random.normal(0, std_dev, 2)  # Gaussian adjustment #TODO: Walking direction
@@ -169,5 +173,5 @@ class Predator:
 
     def update_age(self):
         self.age += 1
-        if self.age > self.max_age:
-            self.energy = 0.0
+        # if self.age > self.max_age:
+        #     self.energy = 0.0

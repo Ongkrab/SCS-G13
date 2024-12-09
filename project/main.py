@@ -6,6 +6,9 @@ from reindeer import Reindeer
 from matplotlib.patches import Circle
 import os
 import argparse
+import visualization
+
+# from matplotlib.colors import ListedColormap, BoundaryNorm
 from helper import *
 from pynput import keyboard
 
@@ -51,6 +54,7 @@ def main():
     culling_rate = simulation["culling_rate"]
     culling_threshold = simulation["culling_threshold"]
     max_reindeer_population = simulation["max_reindeer_population"]
+    isPlotResults = simulation["is_plot_results"]
     #############################
     ## Reindeer parameters
     #############################
@@ -430,145 +434,107 @@ def main():
         predator_death_by_starvation,
         delimiter=",",
     )
+    # if isPlotResults:
+    # Plot the results after the simulation has finished
+
+    # # Plot population dynamics
+    # plt.figure()
+    # plt.plot(reindeer_population, label="Reindeer Population", color="blue")
+    # plt.plot(predator_population, label="Predator Population", color="red")
+    # if step > max_steps / 2:
+    #     plt.axvline(
+    #         x=max_steps / 2,
+    #         color="grey",
+    #         linestyle="--",
+    #         linewidth=2,
+    #         label="Intrusion added",
+    #     )
+    # if len(predator_reintroduction) > 0:
+    #     plt.scatter(
+    #         predator_reintroduction[:, 0],
+    #         predator_reintroduction[:, 1],
+    #         c="black",
+    #         label="Predator reintroduced",
+    #         alpha=1,
+    #     )
+    # plt.xlabel("Time Step")
+    # plt.ylabel("Population")
+    # plt.title("Population Dynamics")
+    # plt.legend()
+    # plt.show()
+
+    # plt.plot(death_by_age[:, 0], death_by_age[:, 1], color="blue", label="Old age")
+    # plt.plot(
+    #     death_by_starvation[:, 0],
+    #     death_by_starvation[:, 1],
+    #     color="green",
+    #     label="Starved",
+    # )
+    # plt.plot(
+    #     death_by_predator[:, 0], death_by_predator[:, 1], color="red", label="Eaten"
+    # )
+    # plt.plot(
+    #     death_by_culling[:, 0],
+    #     death_by_culling[:, 1],
+    #     color="orange",
+    #     label="Culled",
+    # )
+    # if step > max_steps / 2:
+    #     plt.axvline(
+    #         x=max_steps / 2,
+    #         color="grey",
+    #         linestyle="--",
+    #         linewidth=2,
+    #         label="Intrusion added",
+    #     )
+    # plt.title("Prey cause of death")
+    # plt.xlabel("Time Step")
+    # plt.ylabel("Total amount")
+    # plt.legend()
+    # plt.show()
+
+    # plt.plot(
+    #     predator_death_by_age[:, 0],
+    #     predator_death_by_age[:, 1],
+    #     color="blue",
+    #     label="Old age",
+    # )
+    # plt.plot(
+    #     predator_death_by_starvation[:, 0],
+    #     predator_death_by_starvation[:, 1],
+    #     color="green",
+    #     label="Starved",
+    # )
+    # if step > max_steps / 2:
+    #     plt.axvline(
+    #         x=max_steps / 2,
+    #         color="grey",
+    #         linestyle="--",
+    #         linewidth=2,
+    #         label="Intrusion added",
+    #     )
+    # plt.title("Predator cause of death")
+    # plt.xlabel("Time Step")
+    # plt.ylabel("Total amount")
+    # plt.legend()
+    # plt.show()
+
+    # plt.plot(culling_statistics[:, 0], culling_statistics[:, 1])
+    # plt.title("Culling statistics")
+    # if step > max_steps / 2:
+    #     plt.axvline(
+    #         x=max_steps / 2,
+    #         color="grey",
+    #         linestyle="--",
+    #         linewidth=2,
+    #         label="Intrusion added",
+    #     )
+    # plt.xlabel("Time Step")
+    # plt.ylabel("Amount culled each season")
+    # plt.show()
+
     if isPlotResults:
-        # Plot the results after the simulation has finished
-
-        # Plot population dynamics
-        plt.figure()
-        plt.plot(reindeer_population, label="Reindeer Population", color="blue")
-        plt.plot(predator_population, label="Predator Population", color="red")
-        if step > max_steps / 2:
-            plt.axvline(
-                x=max_steps / 2,
-                color="grey",
-                linestyle="--",
-                linewidth=2,
-                label="Intrusion added",
-            )
-        if len(predator_reintroduction) > 0:
-            plt.scatter(
-                predator_reintroduction[:, 0],
-                predator_reintroduction[:, 1],
-                c="black",
-                label="Predator reintroduced",
-                alpha=1,
-            )
-        plt.xlabel("Time Step")
-        plt.ylabel("Population")
-        plt.title("Population Dynamics")
-        plt.legend()
-        plt.show()
-
-        plt.plot(death_by_age[:, 0], death_by_age[:, 1], color="blue", label="Old age")
-        plt.plot(
-            death_by_starvation[:, 0],
-            death_by_starvation[:, 1],
-            color="green",
-            label="Starved",
-        )
-        plt.plot(
-            death_by_predator[:, 0], death_by_predator[:, 1], color="red", label="Eaten"
-        )
-        plt.plot(
-            death_by_culling[:, 0],
-            death_by_culling[:, 1],
-            color="orange",
-            label="Culled",
-        )
-        if step > max_steps / 2:
-            plt.axvline(
-                x=max_steps / 2,
-                color="grey",
-                linestyle="--",
-                linewidth=2,
-                label="Intrusion added",
-            )
-        plt.title("Prey cause of death")
-        plt.xlabel("Time Step")
-        plt.ylabel("Total amount")
-        plt.legend()
-        plt.show()
-
-        plt.plot(
-            predator_death_by_age[:, 0],
-            predator_death_by_age[:, 1],
-            color="blue",
-            label="Old age",
-        )
-        plt.plot(
-            predator_death_by_starvation[:, 0],
-            predator_death_by_starvation[:, 1],
-            color="green",
-            label="Starved",
-        )
-        if step > max_steps / 2:
-            plt.axvline(
-                x=max_steps / 2,
-                color="grey",
-                linestyle="--",
-                linewidth=2,
-                label="Intrusion added",
-            )
-        plt.title("Predator cause of death")
-        plt.xlabel("Time Step")
-        plt.ylabel("Total amount")
-        plt.legend()
-        plt.show()
-
-        plt.plot(culling_statistics[:, 0], culling_statistics[:, 1])
-        plt.title("Culling statistics")
-        if step > max_steps / 2:
-            plt.axvline(
-                x=max_steps / 2,
-                color="grey",
-                linestyle="--",
-                linewidth=2,
-                label="Intrusion added",
-            )
-        plt.xlabel("Time Step")
-        plt.ylabel("Amount culled each season")
-        plt.show()
-
-    if isPlotResults:
-        # Plot the results after the simulation has finished
-
-        # Plot population dynamics
-        plt.figure()
-        plt.plot(reindeer_population, label="Reindeer Population", color="blue")
-        plt.plot(predator_population, label="Predator Population", color="red")
-        plt.xlabel("Time Step")
-        plt.ylabel("Population")
-        plt.title("Population Dynamics")
-        plt.legend()
-        plt.show()
-
-        plt.plot(death_by_age[:, 0], death_by_age[:, 1], color="blue", label="Old age")
-        plt.plot(
-            death_by_starvation[:, 0],
-            death_by_starvation[:, 1],
-            color="green",
-            label="Starved",
-        )
-        plt.plot(
-            death_by_predator[:, 0], death_by_predator[:, 1], color="red", label="Eaten"
-        )
-        plt.plot(
-            death_by_culling[:, 0],
-            death_by_culling[:, 1],
-            color="orange",
-            label="Culled",
-        )
-        plt.title("Cause of death")
-        plt.xlabel("Time Step")
-        plt.ylabel("Total amount")
-        plt.legend()
-        plt.show()
-
-        plt.plot(culling_statistics[:, 0], culling_statistics[:, 1])
-        plt.title("Culling statistics")
-        plt.xlabel("Time Step")
-        plt.ylabel("Amount culled each season")
-        plt.show()
+        visualization.visualize(root_path=RESULT_PATH, folder_name=current_time)
 
 
 if __name__ == "__main__":

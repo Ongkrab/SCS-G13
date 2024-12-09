@@ -3,8 +3,8 @@ from numpy import genfromtxt
 import matplotlib.pyplot as plt
 import os
 
-ROOT_PATH = "./hello2/"
-FOLDER_NAME_DEFAULT = "20241206-133229"
+ROOT_PATH = "./results/"
+FOLDER_NAME_DEFAULT = "20241209-114448"
 IMAGE_FOLDER_NAME = "images"
 
 
@@ -29,8 +29,8 @@ def create_population_dynamic_plot(
     )
     if len(predator_reintroduction) > 0:
         plt.scatter(
-            predator_reintroduction[:, 0],
-            predator_reintroduction[:, 1],
+            predator_reintroduction[0],
+            predator_reintroduction[1],
             c="black",
             label="Predator reintroduced",
             alpha=1,
@@ -47,7 +47,6 @@ def create_population_dynamic_plot(
 def create_culling_statistics_plot(
     culling_statistics, max_steps, is_save=False, image_folder_path=""
 ):
-    # max_steps = len(culling_statistics)
     culling_statistics = np.array(culling_statistics)
     plt.plot(culling_statistics[:, 0], culling_statistics[:, 1])
     plt.axvline(
@@ -65,13 +64,59 @@ def create_culling_statistics_plot(
     plt.show()
 
 
-def create_predator_death_plot(
-    predator_death_by_age,
+def create_death_plot(
+    death_by_age,
     predator_death_by_starvation,
+    death_by_starvation,
+    death_by_predator,
+    death_by_culling,
     is_save=False,
     image_folder_path="",
 ):
     max_steps = len(predator_death_by_starvation)
+    plt.plot(
+        death_by_age[:, 0],
+        death_by_age[:, 1],
+        color="blue",
+        label="Old age",
+    )
+    plt.plot(
+        death_by_starvation[:, 0],
+        death_by_starvation[:, 1],
+        color="green",
+        label="Starved",
+    )
+    plt.plot(
+        death_by_predator[:, 0], death_by_predator[:, 1], color="red", label="Eaten"
+    )
+
+    plt.plot(
+        death_by_culling[:, 0], death_by_culling[:, 1], color="black", label="Culled"
+    )
+
+    plt.axvline(
+        x=max_steps / 2,
+        color="grey",
+        linestyle="--",
+        linewidth=2,
+        label="Intrusion added",
+    )
+    plt.title("Prey cause of death")
+    plt.xlabel("Time Step")
+    plt.ylabel("Total amount")
+    plt.legend()
+    if is_save:
+        plt.savefig(image_folder_path + "death_plot.png")
+    plt.show()
+
+
+def create_predator_death_by_age(
+    predator_death_by_age,
+    predator_death_by_starvation,
+    max_steps,
+    is_save=False,
+    image_folder_path="",
+):
     plt.plot(
         predator_death_by_age[:, 0],
         predator_death_by_age[:, 1],
@@ -91,12 +136,13 @@ def create_predator_death_plot(
         linewidth=2,
         label="Intrusion added",
     )
+
     plt.title("Predator cause of death")
     plt.xlabel("Time Step")
     plt.ylabel("Total amount")
     plt.legend()
     if is_save:
-        plt.savefig(image_folder_path + "predator_death.png")
+        plt.savefig(image_folder_path + "predator_death_by_age.png")
     plt.show()
 
 
@@ -130,6 +176,7 @@ def visualize(root_path=ROOT_PATH, folder_name=FOLDER_NAME_DEFAULT):
     culling_statistics = genfromtxt(
         result_folder_path + "culling_statistics.csv", delimiter=","
     )
+
     max_steps = len(reindeer_population)
     create_population_dynamic_plot(
         reindeer_population,
@@ -138,9 +185,24 @@ def visualize(root_path=ROOT_PATH, folder_name=FOLDER_NAME_DEFAULT):
         True,
         image_folder_path,
     )
-    create_predator_death_plot(
-        death_by_age, death_by_starvation, True, image_folder_path
+
+    create_death_plot(
+        death_by_age,
+        death_by_predator,
+        death_by_starvation,
+        death_by_predator,
+        death_by_culling,
+        True,
+        image_folder_path,
+    )
+
+    create_predator_death_by_age(
+        death_by_age, death_by_starvation, max_steps, True, image_folder_path
     )
     create_culling_statistics_plot(
         culling_statistics, max_steps, True, image_folder_path
     )
+
+
+if __name__ == "__main__":
+    visualize()

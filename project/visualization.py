@@ -2,6 +2,7 @@ import numpy as np
 from numpy import genfromtxt
 import matplotlib.pyplot as plt
 import os
+from helper import *
 
 ROOT_PATH = "./results/"
 FOLDER_NAME_DEFAULT = "20241209-114448"
@@ -12,21 +13,23 @@ def create_population_dynamic_plot(
     reindeer_population,
     predator_population,
     predator_reintroduction,
+    latest_step,
+    max_steps,
     is_save=False,
     image_folder_path="",
 ):
-    max_steps = len(reindeer_population)
+
     plt.figure()
     plt.plot(reindeer_population, label="Reindeer Population", color="blue")
     plt.plot(predator_population, label="Predator Population", color="red")
-    # if step > max_steps / 2:
-    plt.axvline(
-        x=max_steps / 2,
-        color="grey",
-        linestyle="--",
-        linewidth=2,
-        label="Intrusion added",
-    )
+    if latest_step > max_steps / 2:
+        plt.axvline(
+            x=max_steps / 2,
+            color="grey",
+            linestyle="--",
+            linewidth=2,
+            label="Intrusion added",
+        )
     if len(predator_reintroduction) > 0:
         plt.scatter(
             predator_reintroduction[0],
@@ -45,17 +48,22 @@ def create_population_dynamic_plot(
 
 
 def create_culling_statistics_plot(
-    culling_statistics, max_steps, is_save=False, image_folder_path=""
+    culling_statistics,
+    latest_step,
+    max_steps,
+    is_save=False,
+    image_folder_path="",
 ):
     culling_statistics = np.array(culling_statistics)
     plt.plot(culling_statistics[:, 0], culling_statistics[:, 1])
-    plt.axvline(
-        x=max_steps / 2,
-        color="grey",
-        linestyle="--",
-        linewidth=2,
-        label="Intrusion added",
-    )
+    if latest_step > max_steps / 2:
+        plt.axvline(
+            x=max_steps / 2,
+            color="grey",
+            linestyle="--",
+            linewidth=2,
+            label="Intrusion added",
+        )
     plt.title("Culling statistics")
     plt.xlabel("Time Step")
     plt.ylabel("Amount culled each season")
@@ -70,6 +78,8 @@ def create_death_plot(
     death_by_starvation,
     death_by_predator,
     death_by_culling,
+    latest_step,
+    max_steps,
     is_save=False,
     image_folder_path="",
 ):
@@ -94,13 +104,14 @@ def create_death_plot(
         death_by_culling[:, 0], death_by_culling[:, 1], color="black", label="Culled"
     )
 
-    plt.axvline(
-        x=max_steps / 2,
-        color="grey",
-        linestyle="--",
-        linewidth=2,
-        label="Intrusion added",
-    )
+    if latest_step > max_steps / 2:
+        plt.axvline(
+            x=max_steps / 2,
+            color="grey",
+            linestyle="--",
+            linewidth=2,
+            label="Intrusion added",
+        )
     plt.title("Prey cause of death")
     plt.xlabel("Time Step")
     plt.ylabel("Total amount")
@@ -113,6 +124,7 @@ def create_death_plot(
 def create_predator_death_by_age(
     predator_death_by_age,
     predator_death_by_starvation,
+    latest_step,
     max_steps,
     is_save=False,
     image_folder_path="",
@@ -129,13 +141,15 @@ def create_predator_death_by_age(
         color="green",
         label="Starved",
     )
-    plt.axvline(
-        x=max_steps / 2,
-        color="grey",
-        linestyle="--",
-        linewidth=2,
-        label="Intrusion added",
-    )
+    if latest_step > max_steps / 2:
+
+        plt.axvline(
+            x=max_steps / 2,
+            color="grey",
+            linestyle="--",
+            linewidth=2,
+            label="Intrusion added",
+        )
 
     plt.title("Predator cause of death")
     plt.xlabel("Time Step")
@@ -148,7 +162,7 @@ def create_predator_death_by_age(
 
 def visualize(root_path=ROOT_PATH, folder_name=FOLDER_NAME_DEFAULT):
     result_folder_path = root_path + folder_name + "/"
-
+    config_path = result_folder_path + "config.json"
     image_folder_path = result_folder_path + IMAGE_FOLDER_NAME + "/"
 
     if not os.path.exists(image_folder_path):
@@ -177,11 +191,17 @@ def visualize(root_path=ROOT_PATH, folder_name=FOLDER_NAME_DEFAULT):
         result_folder_path + "culling_statistics.csv", delimiter=","
     )
 
-    max_steps = len(reindeer_population)
+    latest_step = len(reindeer_population)
+    config = load_config(config_path)
+    simulation = config["simulation"]
+    max_steps = simulation["max_steps"]
+
     create_population_dynamic_plot(
         reindeer_population,
         predator_population,
         predator_reintroduction,
+        latest_step,
+        max_steps,
         True,
         image_folder_path,
     )
@@ -192,15 +212,22 @@ def visualize(root_path=ROOT_PATH, folder_name=FOLDER_NAME_DEFAULT):
         death_by_starvation,
         death_by_predator,
         death_by_culling,
+        latest_step,
+        max_steps,
         True,
         image_folder_path,
     )
 
     create_predator_death_by_age(
-        death_by_age, death_by_starvation, max_steps, True, image_folder_path
+        death_by_age,
+        death_by_starvation,
+        latest_step,
+        max_steps,
+        True,
+        image_folder_path,
     )
     create_culling_statistics_plot(
-        culling_statistics, max_steps, True, image_folder_path
+        culling_statistics, latest_step, max_steps, True, image_folder_path
     )
 
 

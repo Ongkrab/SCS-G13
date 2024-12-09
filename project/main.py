@@ -122,6 +122,18 @@ def main():
     food_grid = np.random.uniform(0.2, 0.8, grid_size)
     set_grid_size(grid_size)
 
+    current_time = time.strftime("%Y%m%d-%H%M%S")
+    result_folder_path = RESULT_PATH + current_time + "/"
+    image_folder = "images"
+    result_image_path = result_folder_path + image_folder + "/"
+
+    # Create result folder if it doesn't exist
+    if not os.path.exists(result_folder_path):
+        os.makedirs(result_folder_path)
+
+    if not os.path.exists(result_image_path):
+        os.makedirs(result_image_path)
+
     # Initialize agents with random ages
     reindeers = [
         Reindeer(
@@ -361,6 +373,18 @@ def main():
             plt.pause(0.00001)
             plt.clf()
 
+        if step % 10 == 0:
+            plot_simulation_step(
+                grid_size,
+                intrusion_center,
+                intrusion_radius,
+                food_grid,
+                result_image_path,
+                reindeers,
+                predators,
+                step,
+            )
+
         # Stop if no reindeer are left
         if len(reindeers) == 0:
             print("All reindeer have been hunted.")
@@ -373,8 +397,7 @@ def main():
     print(f"Simulation finished. {endTime - startTime} seconds elapsed.")
 
     # Save the results
-    current_time = time.strftime("%Y%m%d-%H%M%S")
-    result_folder_path = RESULT_PATH + current_time + "/"
+
     reindeer_population = np.array(reindeer_population)
     predator_population = np.array(predator_population)
     death_by_age = np.array(death_by_age)
@@ -385,10 +408,6 @@ def main():
     predator_reintroduction = np.array(predator_reintroduction)
     predator_death_by_starvation = np.array(predator_death_by_starvation)
     predator_death_by_age = np.array(predator_death_by_age)
-
-    # Create result folder if it doesn't exist
-    if not os.path.exists(result_folder_path):
-        os.makedirs(result_folder_path)
 
     # Save results to CSV files
     # config.save()
@@ -437,6 +456,54 @@ def main():
 
     if isPlotResults:
         visualization.visualize(root_path=RESULT_PATH, folder_name=current_time)
+
+
+def plot_simulation_step(
+    grid_size,
+    intrusion_center,
+    intrusion_radius,
+    food_grid,
+    result_image_path,
+    reindeers,
+    predators,
+    step,
+):
+    plt.imshow(
+        food_grid,
+        cmap="Greens",
+        extent=(0, grid_size[1], 0, grid_size[0]),
+    )
+    if intrusion_center is not None and intrusion_radius is not None:
+        circle = Circle(
+            (intrusion_center[1], intrusion_center[0]),
+            intrusion_radius,
+            color="grey",
+            alpha=1,
+        )
+        plt.gca().add_artist(circle)
+    if reindeers:
+        reindeer_positions = np.array([r.position for r in reindeers])
+        plt.scatter(
+            reindeer_positions[:, 1],
+            reindeer_positions[:, 0],
+            c="blue",
+            label="Reindeer",
+            alpha=0.7,
+        )
+    if predators:
+        predator_positions = np.array([p.position for p in predators])
+        plt.scatter(
+            predator_positions[:, 1],
+            predator_positions[:, 0],
+            c="red",
+            label="Predators",
+            alpha=0.7,
+        )
+    plt.title(f"Step {step}")
+    plt.legend()
+    plt.savefig(result_image_path + f"step_{step}.png")
+    plt.clf()
+    plt.close()
 
 
 if __name__ == "__main__":

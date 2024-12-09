@@ -192,52 +192,6 @@ def create_death_plot(
     plt.show()
 
 
-
-def create_predator_death_by_age(
-    predator_death_by_age,
-    predator_death_by_starvation,
-    latest_step,
-    max_steps,
-    is_save=False,
-    image_folder_path="",
-):
-    plt.plot(
-        death_by_age[:, 0],
-        death_by_age[:, 1],
-        color="blue",
-        label="Old age",
-    )
-    plt.plot(
-        death_by_starvation[:, 0],
-        death_by_starvation[:, 1],
-        color="green",
-        label="Starved",
-    )
-    plt.plot(
-        death_by_predator[:, 0], death_by_predator[:, 1], color="red", label="Eaten"
-    )
-
-    plt.plot(
-        death_by_culling[:, 0], death_by_culling[:, 1], color="black", label="Culled"
-    )
-
-    if latest_step > max_steps / 2:
-        plt.axvline(
-            x=max_steps / 2,
-            color="grey",
-            linestyle="--",
-            linewidth=2,
-            label="Intrusion added",
-        )
-    plt.title("Prey cause of death")
-    plt.xlabel("Time Step")
-    plt.ylabel("Total amount")
-    plt.legend()
-    if is_save:
-        plt.savefig(image_folder_path + "death_plot.png")
-    plt.show()
-
-
 def create_predator_death_by_age(
     predator_death_by_age,
     predator_death_by_starvation,
@@ -361,7 +315,6 @@ def visualize(root_path=ROOT_PATH, folder_name=FOLDER_NAME_DEFAULT):
     )
 
     predator_reintroduction = predator_reintroduction.reshape(-1, 2)
-
 
     latest_step = len(reindeer_population)
     config = load_config(config_path)

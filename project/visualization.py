@@ -5,7 +5,7 @@ import os
 from helper import *
 
 ROOT_PATH = "./results/"
-FOLDER_NAME_DEFAULT = "20241209-114448"
+FOLDER_NAME_DEFAULT = "20241209-111900"
 IMAGE_FOLDER_NAME = "images"
 
 
@@ -32,8 +32,8 @@ def create_population_dynamic_plot(
         )
     if len(predator_reintroduction) > 0:
         plt.scatter(
-            predator_reintroduction[0],
-            predator_reintroduction[1],
+            predator_reintroduction[:, 0],
+            predator_reintroduction[:, 1],
             c="black",
             label="Predator reintroduced",
             alpha=1,
@@ -195,6 +195,7 @@ def visualize(root_path=ROOT_PATH, folder_name=FOLDER_NAME_DEFAULT):
     config = load_config(config_path)
     simulation = config["simulation"]
     max_steps = simulation["max_steps"]
+    predator_reintroduction = predator_reintroduction.reshape(-1, 2)
 
     create_population_dynamic_plot(
         reindeer_population,

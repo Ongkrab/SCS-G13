@@ -254,7 +254,6 @@ def visualize(root_path=ROOT_PATH, folder_name=FOLDER_NAME_DEFAULT):
 
     create_death_plot(
         death_by_age,
-        death_by_predator,
         death_by_starvation,
         death_by_predator,
         death_by_culling,

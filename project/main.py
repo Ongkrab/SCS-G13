@@ -337,7 +337,10 @@ def main():
                 if len(reindeers) - num_to_remove < culling_threshold:
                     num_to_remove = len(reindeers) - culling_threshold
                 if len(reindeers) > max_reindeer_population:
-                    num_to_remove = max(int(len(reindeers)*culling_rate),len(reindeers)-max_reindeer_population)
+                    num_to_remove = max(
+                        int(len(reindeers) * culling_rate),
+                        len(reindeers) - max_reindeer_population,
+                    )
             else:
                 num_to_remove = 0
             # Randomly select indices to remove using numpy
@@ -449,6 +452,47 @@ def main():
     np.savetxt(
         result_folder_path + "culling_statistics.csv", culling_statistics, delimiter=","
     )
+
+    if isPlotResults:
+        # Plot the results after the simulation has finished
+
+        # Plot population dynamics
+        plt.figure()
+        plt.plot(reindeer_population, label="Reindeer Population", color="blue")
+        plt.plot(predator_population, label="Predator Population", color="red")
+        plt.xlabel("Time Step")
+        plt.ylabel("Population")
+        plt.title("Population Dynamics")
+        plt.legend()
+        plt.show()
+
+        plt.plot(death_by_age[:, 0], death_by_age[:, 1], color="blue", label="Old age")
+        plt.plot(
+            death_by_starvation[:, 0],
+            death_by_starvation[:, 1],
+            color="green",
+            label="Starved",
+        )
+        plt.plot(
+            death_by_predator[:, 0], death_by_predator[:, 1], color="red", label="Eaten"
+        )
+        plt.plot(
+            death_by_culling[:, 0],
+            death_by_culling[:, 1],
+            color="orange",
+            label="Culled",
+        )
+        plt.title("Cause of death")
+        plt.xlabel("Time Step")
+        plt.ylabel("Total amount")
+        plt.legend()
+        plt.show()
+
+        plt.plot(culling_statistics[:, 0], culling_statistics[:, 1])
+        plt.title("Culling statistics")
+        plt.xlabel("Time Step")
+        plt.ylabel("Amount culled each season")
+        plt.show()
 
 
 if __name__ == "__main__":

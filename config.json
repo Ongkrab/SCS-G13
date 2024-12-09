@@ -11,6 +11,7 @@
     "max_reindeer_population": 300,
     "is_animate": false,
     "is_plot_results": true
+    "capture_interval": 100
   },
   "reindeer": {
     "initial": {

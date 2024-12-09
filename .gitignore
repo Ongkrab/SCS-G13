@@ -3,4 +3,6 @@
 /dist
 /hello
 *.pyc
-*.spec
+/build
+/dist
+reindeer-project.spec

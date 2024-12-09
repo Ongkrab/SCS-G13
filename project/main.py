@@ -8,6 +8,7 @@ import os
 import argparse
 from helper import *
 from pynput import keyboard
+import pandas as pd
 
 stop_loop = False
 
@@ -160,12 +161,12 @@ def main():
     predator_population = []
     culling_statistics = []
     predator_reintroduction = []
-    death_by_culling = [[0, 0]]
-    death_by_age = [[0, 0]]
-    death_by_predator = [[0, 0]]
-    death_by_starvation = [[0, 0]]
-    predator_death_by_age = [[0, 0]]
-    predator_death_by_starvation = [[0, 0]]
+    death_by_culling = [[0,0]]
+    death_by_age = [[0,0]]
+    death_by_predator = [[0,0]]
+    death_by_starvation = [[0,0]]
+    predator_death_by_age = [[0,0]]
+    predator_death_by_starvation = [[0,0]]
     print("Initialized Complete.")
     startTime = time.time()
 
@@ -447,6 +448,7 @@ def main():
         plt.legend()
         plt.show()
 
+
         plt.plot(death_by_age[:, 0], death_by_age[:, 1], color="blue", label="Old age")
         plt.plot(death_by_starvation[:, 0], death_by_starvation[:, 1], color="green", label="Starved")
         plt.plot(death_by_predator[:, 0], death_by_predator[:, 1], color="red", label="Eaten")
@@ -458,6 +460,50 @@ def main():
         plt.ylabel("Total amount")
         plt.legend()
         plt.show()
+
+        # Define the interval for comparison
+        interval = 50
+        # Interpolate data for death_by_age
+        temp_death_by_age=[]
+        for i in range(len(death_by_age)-1):
+              for j in range(death_by_age[i][0],death_by_age[i+1][0]):
+                temp_death_by_age.append([j,death_by_age[i][1]+(j-death_by_age[i][0])*(death_by_age[i+1][1]-death_by_age[i][1])/(death_by_age[i+1][0]-death_by_age[i][0])])
+        temp_death_by_age=np.array(temp_death_by_age)
+        df = pd.DataFrame({'x': temp_death_by_age[:, 0], 'y': temp_death_by_age[:, 1]})
+        # Compute the average change over the interval
+        df['y_change'] = df['y'].diff(periods=interval) / interval
+        plt.plot(df['x'], df['y_change'], label='Old age', color='blue')
+
+        # Interpolate data for death_by_culling
+        temp_death_by_culling=[]
+        for i in range(len(death_by_culling)-1):
+              for j in range(death_by_culling[i][0],death_by_culling[i+1][0]):
+                temp_death_by_culling.append([j,death_by_culling[i][1]+(j-death_by_culling[i][0])*(death_by_culling[i+1][1]-death_by_culling[i][1])/(death_by_culling[i+1][0]-death_by_culling[i][0])])
+        temp_death_by_culling=np.array(temp_death_by_culling)
+        df = pd.DataFrame({'x': temp_death_by_culling[:, 0], 'y': temp_death_by_culling[:, 1]})
+        # Compute the average change over the interval
+        df['y_change'] = df['y'].diff(periods=interval) / interval
+        plt.plot(df['x'], df['y_change'], label='Culled', color='orange')
+
+        #Starvation
+        df = pd.DataFrame({'x': death_by_starvation[:, 0], 'y': death_by_starvation[:, 1]})
+        # Compute the average change over the interval
+        df['y_change'] = df['y'].diff(periods=interval) / interval
+        plt.plot(df['x'], df['y_change'], label='Starved', color='green')
+
+        #Predator
+        df = pd.DataFrame({'x': death_by_predator[:, 0], 'y': death_by_predator[:, 1]})
+        # Compute the average change over the interval
+        df['y_change'] = df['y'].diff(periods=interval) / interval
+        plt.plot(df['x'], df['y_change'], label='Eaten', color='red')
+
+        if step>max_steps/2:
+            plt.axvline(x=max_steps/2, color='grey', linestyle='--', linewidth=2, label='Intrusion added')
+        plt.title(f'Rolling average cause of death per timestep over the last {interval} timesteps')
+        plt.xlabel("Time Step")
+        plt.legend()
+        plt.show()
+
 
         plt.plot(predator_death_by_age[:, 0], predator_death_by_age[:, 1], color="blue", label="Old age")
         plt.plot(predator_death_by_starvation[:, 0], predator_death_by_starvation[:, 1], color="green", label="Starved")

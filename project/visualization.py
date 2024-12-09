@@ -6,6 +6,7 @@ from helper import *
 import pandas as pd
 
 ROOT_PATH = "./results/"
+
 FOLDER_NAME_DEFAULT = "20241209-145755"
 IMAGE_FOLDER_NAME = "images"
 
@@ -121,6 +122,7 @@ def create_death_plot(
     # Define the interval for comparison
     interval = 50
     # Interpolate data for death_by_age
+
     temp_death_by_age = []
     for i in range(len(death_by_age) - 1):
         for j in range(int(death_by_age[i][0]), int(death_by_age[i + 1][0])):
@@ -188,6 +190,7 @@ def create_death_plot(
     if is_save:
         plt.savefig(image_folder_path + "death_plot_average.png")
     plt.show()
+
 
 
 def create_predator_death_by_age(
@@ -271,6 +274,7 @@ def create_predator_death_by_age(
     plt.legend()
     if is_save:
         plt.savefig(image_folder_path + "predator_death_by_age.png")
+
     plt.show()
 
 
@@ -351,11 +355,13 @@ def visualize(root_path=ROOT_PATH, folder_name=FOLDER_NAME_DEFAULT):
     culling_statistics = genfromtxt(
         result_folder_path + "culling_statistics.csv", delimiter=","
     )
+
     reindeer_clustering_coeefficient = genfromtxt(
         result_folder_path + "reindeer_clustering_coefficient.csv", delimiter=","
     )
 
     predator_reintroduction = predator_reintroduction.reshape(-1, 2)
+
 
     latest_step = len(reindeer_population)
     config = load_config(config_path)

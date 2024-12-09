@@ -365,6 +365,7 @@ def main():
             grid_size[0],
         )
 
+
         # Plot the environment
         if isAnimate:
             plt.imshow(

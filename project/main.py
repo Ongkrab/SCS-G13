@@ -108,8 +108,8 @@ def main():
     #############################
 
     # Assign individual variables for intrusion parameters
-    intrusion_center = intrusion["center"]
-    intrusion_radius = intrusion["radius"]
+    intrusion_center = None
+    intrusion_radius = None
 
     print("Configuration loaded.")
     #############################
@@ -303,8 +303,11 @@ def main():
 
         # Intrusion logic
         if step == max_steps // 2:
-            intrusion_center = (0, grid_size[1] // 2)
-            intrusion_radius = 40.0
+            intrusion_center_relative = tuple(intrusion["center_relative_grid"])
+            intrusion_center = (intrusion_center_relative[0] * grid_size[0], \
+                                intrusion_center_relative[1] * grid_size[1])
+
+            intrusion_radius = intrusion["radius"]
 
         # Plot the environment
         if isAnimate:

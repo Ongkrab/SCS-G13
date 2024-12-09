@@ -60,7 +60,7 @@
     }
   },
   "intrusion": {
-    "center": null,
-    "radius": null
+    "center_relative_grid": [0, 0.5],
+    "radius": 0
   }
 }

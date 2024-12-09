@@ -151,7 +151,7 @@ class Predator:
                 y=offspring_position[1],
                 age=0,
                 max_age=self.max_age,
-                energy=self.energy,
+                energy=offspring_energy,
                 energy_decay=self.energy_decay,
                 reproductive_age=self.reproductive_age,
                 reproduction_rate=self.reproduction_rate,
@@ -169,5 +169,5 @@ class Predator:
 
     def update_age(self):
         self.age += 1
-        if self.age > self.max_age:
-            self.energy = 0.0
+        # if self.age > self.max_age:
+        #     self.energy = 0.0

@@ -5,14 +5,15 @@ from predator import Predator
 from reindeer import Reindeer
 from matplotlib.patches import Circle
 import os
-
-# from matplotlib.colors import ListedColormap, BoundaryNorm
+import argparse
 from helper import *
 from pynput import keyboard
 
 stop_loop = False
 
 start_time = time.time()
+CONFIG_PATH = "./config.json"
+RESULT_PATH = "./results/"
 
 
 # Function to handle key press events
@@ -29,71 +30,8 @@ listener.start()
 
 
 def main():
-    # # Simulation parameters
-    # grid_size = (200, 300)  # Height, Width
-    # num_reindeer = 200  # Increased number of reindeer
-    # num_predators = 5
-    # max_steps = 10000
-    # food_regeneration_rate = 0.003  # Slightly faster food regeneration
-    # reproduction_interval = 35  # Reproduction occurs less frequently
-
-    # #############################
-    # ## Reindeer parameters
-    # #############################
-    # # Reindeer initial parameters
-    # reindeer_initial_age = 0
-    # reindeer_max_speed = 1.0
-    # reindeer_max_age = 15
-    # reindeer_energy = 1.0
-    # reindeer_grazing_speed = 0.2
-    # reindeer_energy_decay = 0.02
-
-    # # Reindeer reproduction parameters
-    # reindeer_reproductive_age = 5
-    # reindeer_reproduction_rate = 0.5
-    # reindeer_reproduction_energy = 0.5
-    # reindeer_reproduction_distance = 10.0
-    # reindeer_offspring_energy = 0.5
-
-    # # Reindeer behavior parameters
-    # reindeer_protected_range = 2.0
-    # reindeer_visual_range = 15.0
-    # reindeer_alert_range = 5.0
-    # reindeer_grazing_rate = 0.2
-
-    # #############################
-    # ## Predator parameters
-    # #############################
-
-    # # Initial Predator parameters
-    # predator_initial_age = 0
-    # predator_max_age = 20
-    # predator_energy = 1.0
-    # predator_energy_decay = 0.01
-    # predator_cruise_speed = 0.4
-    # predator_hunt_speed = 1.5
-    # predator_energy_threshold = 0.6
-
-    # # Predator reproduction parameters
-    # predator_reproductive_age = 5
-    # predator_reproduction_rate = 0.5
-    # predator_reproduction_energy = 0.5
-    # predator_offspring_energy = 0.5
-    # predator_reproduction_distance = 5.0
-
-    # # Predator behavior parameters
-    # predator_visual_range = 25.0
-    # predator_eating_range = 1.0
-    # predator_energy_gain = 0.4
-
-    # #############################
-    # ## Intrusion parameters
-    # #############################
-    # intrusion_center = None  # Middle of the top edge
-    # intrusion_radius = None  # Radius of the exclusion zone
-
     # Load the configuration
-    config = load_config("./config.json")
+    config = load_config(CONFIG_PATH)
 
     # Assign variables for easy access
     simulation = config["simulation"]
@@ -103,6 +41,7 @@ def main():
 
     # Assign individual variables for simulation parameters
     isAnimate = simulation["is_animate"]
+    isPlotResults = simulation["is_plot_results"]
     grid_size = tuple(simulation["grid_size"])
     num_reindeer = simulation["num_reindeer"]
     num_predators = simulation["num_predators"]
@@ -170,6 +109,7 @@ def main():
     intrusion_center = intrusion["center"]
     intrusion_radius = intrusion["radius"]
 
+    print("Configuration loaded.")
     #############################
     ## End of configuration
     #############################
@@ -219,10 +159,15 @@ def main():
     reindeer_population = []
     predator_population = []
     culling_statistics = []
+    predator_reintroduction = []
     death_by_culling = [[0, 0]]
     death_by_age = [[0, 0]]
     death_by_predator = [[0, 0]]
     death_by_starvation = [[0, 0]]
+    predator_death_by_age = [[0, 0]]
+    predator_death_by_starvation = [[0, 0]]
+    print("Initialized Complete.")
+    startTime = time.time()
 
     # Simulation loop
     for step in range(max_steps):
@@ -258,6 +203,7 @@ def main():
 
         temp_death_by_predator = death_by_predator[-1][1]
         temp_number_of_reindeers = len(reindeers)
+        temp_death_by_starvation = predator_death_by_starvation[-1][1]
         for predator in predators[:]:
             predator.move(
                 prey=reindeers,
@@ -274,6 +220,8 @@ def main():
 
             if predator.energy <= 0:
                 predators.remove(predator)  # Remove dead predators
+                temp_death_by_starvation += 1
+        predator_death_by_starvation.append([step, temp_death_by_starvation])
         death_by_predator.append(
             [step, temp_death_by_predator + temp_number_of_reindeers - len(reindeers)]
         )
@@ -300,8 +248,12 @@ def main():
                     )
             death_by_age.append([step, temp_death_by_age])
 
+            temp_death_by_age = predator_death_by_age[-1][1]
             for predator in predators[:]:
                 predator.update_age()
+                if predator.age > predator.max_age:
+                    predators.remove(predator)
+                    temp_death_by_age += 1
                 if np.random.rand() < predator.reproduction_rate:
                     predator.reproduce(
                         predators=predators,
@@ -310,8 +262,10 @@ def main():
                         exclusion_center=intrusion_center,
                         exclusion_radius=intrusion_radius,
                     )
+            predator_death_by_age.append([step, temp_death_by_age])
 
             if len(predators) == 0:
+                predator_reintroduction.append([step, 0])
                 predators = [
                     Predator(
                         x=np.random.uniform(0, grid_size[0]),
@@ -337,9 +291,14 @@ def main():
                 if len(reindeers) - num_to_remove < culling_threshold:
                     num_to_remove = len(reindeers) - culling_threshold
                 if len(reindeers) > max_reindeer_population:
-                    num_to_remove = max(
-                        int(len(reindeers) * culling_rate),
-                        len(reindeers) - max_reindeer_population,
+                    # num_to_remove = max(
+                    #     int(len(reindeers) * culling_rate),
+                    #     len(reindeers) - max_reindeer_population,
+                    # )
+                    num_to_remove = int(
+                        ((len(reindeers) - max_reindeer_population) / 100 + 1)
+                        * culling_rate
+                        * len(reindeers)
                     )
             else:
                 num_to_remove = 0
@@ -395,22 +354,23 @@ def main():
                 )
             plt.title(f"Step {step}")
             plt.legend()
-            plt.pause(0.1)
+            plt.pause(0.00001)
             plt.clf()
 
         # Stop if no reindeer are left
         if len(reindeers) == 0:
             print("All reindeer have been hunted.")
             break
-    print("--- %s seconds ---" % (time.time() - start_time))
-    if stop_loop == False:
-        plt.show()
 
-    print("Simulation finished.")
+    # if stop_loop == False:
+    #     plt.show()
+
+    endTime = time.time()
+    print(f"Simulation finished. {endTime - startTime} seconds elapsed.")
 
     # Save the results
     current_time = time.strftime("%Y%m%d-%H%M%S")
-    result_folder_path = "results/" + current_time + "/"
+    result_folder_path = RESULT_PATH + current_time + "/"
     reindeer_population = np.array(reindeer_population)
     predator_population = np.array(predator_population)
     death_by_age = np.array(death_by_age)
@@ -418,6 +378,9 @@ def main():
     death_by_predator = np.array(death_by_predator)
     death_by_culling = np.array(death_by_culling)
     culling_statistics = np.array(culling_statistics)
+    predator_reintroduction = np.array(predator_reintroduction)
+    predator_death_by_starvation = np.array(predator_death_by_starvation)
+    predator_death_by_age = np.array(predator_death_by_age)
 
     # Create result folder if it doesn't exist
     if not os.path.exists(result_folder_path):
@@ -437,6 +400,11 @@ def main():
         predator_population,
         delimiter=",",
     )
+    np.savetxt(
+        result_folder_path + "predator_reintroduction.csv",
+        predator_reintroduction,
+        delimiter=",",
+    )
     np.savetxt(result_folder_path + "death_by_age.csv", death_by_age, delimiter=",")
     np.savetxt(
         result_folder_path + "death_by_starvation.csv",
@@ -452,6 +420,114 @@ def main():
     np.savetxt(
         result_folder_path + "culling_statistics.csv", culling_statistics, delimiter=","
     )
+    np.savetxt(
+        result_folder_path + "predator_death_by_age.csv",
+        predator_death_by_age,
+        delimiter=",",
+    )
+    np.savetxt(
+        result_folder_path + "predator_death_by_starvation.csv",
+        predator_death_by_starvation,
+        delimiter=",",
+    )
+    if isPlotResults:
+        # Plot the results after the simulation has finished
+
+        # Plot population dynamics
+        plt.figure()
+        plt.plot(reindeer_population, label="Reindeer Population", color="blue")
+        plt.plot(predator_population, label="Predator Population", color="red")
+        if step > max_steps / 2:
+            plt.axvline(
+                x=max_steps / 2,
+                color="grey",
+                linestyle="--",
+                linewidth=2,
+                label="Intrusion added",
+            )
+        if len(predator_reintroduction) > 0:
+            plt.scatter(
+                predator_reintroduction[:, 0],
+                predator_reintroduction[:, 1],
+                c="black",
+                label="Predator reintroduced",
+                alpha=1,
+            )
+        plt.xlabel("Time Step")
+        plt.ylabel("Population")
+        plt.title("Population Dynamics")
+        plt.legend()
+        plt.show()
+
+        plt.plot(death_by_age[:, 0], death_by_age[:, 1], color="blue", label="Old age")
+        plt.plot(
+            death_by_starvation[:, 0],
+            death_by_starvation[:, 1],
+            color="green",
+            label="Starved",
+        )
+        plt.plot(
+            death_by_predator[:, 0], death_by_predator[:, 1], color="red", label="Eaten"
+        )
+        plt.plot(
+            death_by_culling[:, 0],
+            death_by_culling[:, 1],
+            color="orange",
+            label="Culled",
+        )
+        if step > max_steps / 2:
+            plt.axvline(
+                x=max_steps / 2,
+                color="grey",
+                linestyle="--",
+                linewidth=2,
+                label="Intrusion added",
+            )
+        plt.title("Prey cause of death")
+        plt.xlabel("Time Step")
+        plt.ylabel("Total amount")
+        plt.legend()
+        plt.show()
+
+        plt.plot(
+            predator_death_by_age[:, 0],
+            predator_death_by_age[:, 1],
+            color="blue",
+            label="Old age",
+        )
+        plt.plot(
+            predator_death_by_starvation[:, 0],
+            predator_death_by_starvation[:, 1],
+            color="green",
+            label="Starved",
+        )
+        if step > max_steps / 2:
+            plt.axvline(
+                x=max_steps / 2,
+                color="grey",
+                linestyle="--",
+                linewidth=2,
+                label="Intrusion added",
+            )
+        plt.title("Predator cause of death")
+        plt.xlabel("Time Step")
+        plt.ylabel("Total amount")
+        plt.legend()
+        plt.show()
+
+        plt.plot(culling_statistics[:, 0], culling_statistics[:, 1])
+        plt.title("Culling statistics")
+        if step > max_steps / 2:
+            plt.axvline(
+                x=max_steps / 2,
+                color="grey",
+                linestyle="--",
+                linewidth=2,
+                label="Intrusion added",
+            )
+        plt.xlabel("Time Step")
+        plt.ylabel("Amount culled each season")
+        plt.show()
 
     if isPlotResults:
         # Plot the results after the simulation has finished
@@ -496,4 +572,25 @@ def main():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run script with a config file.")
+    parser.add_argument(
+        "--config",
+        type=str,
+        required=False,
+        help="Path to the config file",
+        default="./config.json",
+    )
+    parser.add_argument(
+        "--result",
+        type=str,
+        required=False,
+        help="Path to store result file",
+        default="./results/",
+    )
+    args = parser.parse_args()
+    CONFIG_PATH = args.config
+    RESULT_PATH = args.result
+    print(f"Config path: {CONFIG_PATH}")
+    print(f"Result path: {RESULT_PATH}")
+    print("Starting simulation...")
     main()

@@ -51,6 +51,38 @@ Main Library list
 - numpy
 - matplotlib
 - pynput
+
+## Execution by command line
+MAC
+```
+./reindeer-project --config <CONFIG_JSON_PATH> -- result <RESULT_PATH>
+```
+
+WINDOWS - in PowerShell
+```
+./reindeer-project --config <CONFIG_JSON_PATH> -- result <RESULT_PATH>
+```
+Example
+`./dist/reindeer-project --config ./config.json --result ./results/`
+
+
+
+## Create execution file
+
+### Pre-requisite
+- Install pyinstaller by `pip3 install pyinstaller`
+
+MAC
+```sh
+pyinstaller --onefile --name reindeer-project ./project/main.py
+```
+
+Windows
+```sh
+pyinstaller --onefile --name reindeer-project ./project/main.py
+```
+
+
 <!-- 
 ## Technologies
 

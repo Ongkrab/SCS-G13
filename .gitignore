@@ -1,4 +1,7 @@
 /results
+/build
+/dist
+/hello
 *.pyc
 /build
 /dist

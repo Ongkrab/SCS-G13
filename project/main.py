@@ -6,8 +6,6 @@ from reindeer import Reindeer
 from matplotlib.patches import Circle
 import os
 import argparse
-
-# from matplotlib.colors import ListedColormap, BoundaryNorm
 from helper import *
 from pynput import keyboard
 
@@ -161,11 +159,13 @@ def main():
     reindeer_population = []
     predator_population = []
     culling_statistics = []
+    predator_reintroduction = []
     death_by_culling = [[0, 0]]
     death_by_age = [[0, 0]]
     death_by_predator = [[0, 0]]
     death_by_starvation = [[0, 0]]
-
+    predator_death_by_age = [[0, 0]]
+    predator_death_by_starvation = [[0, 0]]
     print("Initialized Complete.")
     startTime = time.time()
 
@@ -203,6 +203,7 @@ def main():
 
         temp_death_by_predator = death_by_predator[-1][1]
         temp_number_of_reindeers = len(reindeers)
+        temp_death_by_starvation = predator_death_by_starvation[-1][1]
         for predator in predators[:]:
             predator.move(
                 prey=reindeers,
@@ -219,6 +220,8 @@ def main():
 
             if predator.energy <= 0:
                 predators.remove(predator)  # Remove dead predators
+                temp_death_by_starvation += 1
+        predator_death_by_starvation.append([step, temp_death_by_starvation])
         death_by_predator.append(
             [step, temp_death_by_predator + temp_number_of_reindeers - len(reindeers)]
         )
@@ -245,8 +248,12 @@ def main():
                     )
             death_by_age.append([step, temp_death_by_age])
 
+            temp_death_by_age = predator_death_by_age[-1][1]
             for predator in predators[:]:
                 predator.update_age()
+                if predator.age > predator.max_age:
+                    predators.remove(predator)
+                    temp_death_by_age += 1
                 if np.random.rand() < predator.reproduction_rate:
                     predator.reproduce(
                         predators=predators,
@@ -255,8 +262,10 @@ def main():
                         exclusion_center=intrusion_center,
                         exclusion_radius=intrusion_radius,
                     )
+            predator_death_by_age.append([step, temp_death_by_age])
 
             if len(predators) == 0:
+                predator_reintroduction.append([step,0])
                 predators = [
                     Predator(
                         x=np.random.uniform(0, grid_size[0]),
@@ -365,6 +374,9 @@ def main():
     death_by_predator = np.array(death_by_predator)
     death_by_culling = np.array(death_by_culling)
     culling_statistics = np.array(culling_statistics)
+    predator_reintroduction = np.array(predator_reintroduction)
+    predator_death_by_starvation = np.array(predator_death_by_starvation)
+    predator_death_by_age = np.array(predator_death_by_age)
 
     # Create result folder if it doesn't exist
     if not os.path.exists(result_folder_path):
@@ -384,7 +396,16 @@ def main():
         predator_population,
         delimiter=",",
     )
-    np.savetxt(result_folder_path + "death_by_age.csv", death_by_age, delimiter=",")
+    np.savetxt(
+        result_folder_path + "predator_reintroduction.csv",
+        predator_reintroduction,
+        delimiter=",",
+    )
+    np.savetxt(
+        result_folder_path + "death_by_age.csv",
+        death_by_age,
+        delimiter=","
+    )
     np.savetxt(
         result_folder_path + "death_by_starvation.csv",
         death_by_starvation,
@@ -399,7 +420,16 @@ def main():
     np.savetxt(
         result_folder_path + "culling_statistics.csv", culling_statistics, delimiter=","
     )
-
+    np.savetxt(
+        result_folder_path + "predator_death_by_age.csv",
+        predator_death_by_age,
+        delimiter=","
+    )
+    np.savetxt(
+        result_folder_path + "predator_death_by_starvation.csv",
+        predator_death_by_starvation,
+        delimiter=",",
+    )
     if isPlotResults:
         # Plot the results after the simulation has finished
 
@@ -407,6 +437,10 @@ def main():
         plt.figure()
         plt.plot(reindeer_population, label="Reindeer Population", color="blue")
         plt.plot(predator_population, label="Predator Population", color="red")
+        if step>max_steps/2:
+            plt.axvline(x=max_steps/2, color='grey', linestyle='--', linewidth=2, label='Intrusion added')
+        if len(predator_reintroduction)>0:
+            plt.scatter(predator_reintroduction[:, 0],predator_reintroduction[:, 1],c="black",label="Predator reintroduced",alpha=1,)
         plt.xlabel("Time Step")
         plt.ylabel("Population")
         plt.title("Population Dynamics")
@@ -414,19 +448,32 @@ def main():
         plt.show()
 
         plt.plot(death_by_age[:, 0], death_by_age[:, 1], color="blue", label="Old age")
-        plt.plot(
-            death_by_starvation[:, 0], death_by_starvation[:, 1], color="green", label="Starved"
-        )
+        plt.plot(death_by_starvation[:, 0], death_by_starvation[:, 1], color="green", label="Starved")
         plt.plot(death_by_predator[:, 0], death_by_predator[:, 1], color="red", label="Eaten")
         plt.plot(death_by_culling[:, 0], death_by_culling[:, 1], color="orange", label="Culled")
-        plt.title("Cause of death")
+        if step>max_steps/2:
+            plt.axvline(x=max_steps/2, color='grey', linestyle='--', linewidth=2, label='Intrusion added')
+        plt.title("Prey cause of death")
         plt.xlabel("Time Step")
         plt.ylabel("Total amount")
         plt.legend()
         plt.show()
 
+        plt.plot(predator_death_by_age[:, 0], predator_death_by_age[:, 1], color="blue", label="Old age")
+        plt.plot(predator_death_by_starvation[:, 0], predator_death_by_starvation[:, 1], color="green", label="Starved")
+        if step>max_steps/2:
+            plt.axvline(x=max_steps/2, color='grey', linestyle='--', linewidth=2, label='Intrusion added')
+        plt.title("Predator cause of death")
+        plt.xlabel("Time Step")
+        plt.ylabel("Total amount")
+        plt.legend()
+        plt.show()
+
+
         plt.plot(culling_statistics[:, 0], culling_statistics[:, 1])
         plt.title("Culling statistics")
+        if step>max_steps/2:
+            plt.axvline(x=max_steps/2, color='grey', linestyle='--', linewidth=2, label='Intrusion added')
         plt.xlabel("Time Step")
         plt.ylabel("Amount culled each season")
         plt.show()

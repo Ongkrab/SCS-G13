@@ -1,7 +1,7 @@
 import numpy as np
 import keyboard
 import json
-from scipy.spatial import Voronoi, voronoi_plot_2d
+from scipy.spatial import Voronoi
 
 GRID_SIZE = (200, 300)
 

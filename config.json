@@ -62,6 +62,6 @@
   },
   "intrusion": {
     "center_relative_grid": [0, 0.5],
-    "radius": 0
+    "radius": 80
   }
 }

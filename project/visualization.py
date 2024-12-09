@@ -3,9 +3,10 @@ from numpy import genfromtxt
 import matplotlib.pyplot as plt
 import os
 from helper import *
+import pandas as pd
 
 ROOT_PATH = "./results/"
-FOLDER_NAME_DEFAULT = "20241209-142635"
+FOLDER_NAME_DEFAULT = "20241209-145755"
 IMAGE_FOLDER_NAME = "images"
 
 
@@ -74,7 +75,6 @@ def create_culling_statistics_plot(
 
 def create_death_plot(
     death_by_age,
-    predator_death_by_starvation,
     death_by_starvation,
     death_by_predator,
     death_by_culling,
@@ -83,7 +83,121 @@ def create_death_plot(
     is_save=False,
     image_folder_path="",
 ):
-    max_steps = len(predator_death_by_starvation)
+    plt.plot(
+        death_by_age[:, 0],
+        death_by_age[:, 1],
+        color="blue",
+        label="Old age",
+    )
+    plt.plot(
+        death_by_starvation[:, 0],
+        death_by_starvation[:, 1],
+        color="green",
+        label="Starved",
+    )
+    plt.plot(
+        death_by_predator[:, 0], death_by_predator[:, 1], color="red", label="Eaten"
+    )
+
+    plt.plot(
+        death_by_culling[:, 0], death_by_culling[:, 1], color="black", label="Culled"
+    )
+    if latest_step > max_steps / 2:
+        plt.axvline(
+            x=max_steps / 2,
+            color="grey",
+            linestyle="--",
+            linewidth=2,
+            label="Intrusion added",
+        )
+    plt.title("Prey cause of death")
+    plt.xlabel("Time Step")
+    plt.ylabel("Total amount")
+    plt.legend()
+    if is_save:
+        plt.savefig(image_folder_path + "death_plot.png")
+    plt.show()
+
+    # Define the interval for comparison
+    interval = 50
+    # Interpolate data for death_by_age
+    temp_death_by_age = []
+    for i in range(len(death_by_age) - 1):
+        for j in range(int(death_by_age[i][0]), int(death_by_age[i + 1][0])):
+            temp_death_by_age.append(
+                [
+                    j,
+                    death_by_age[i][1]
+                    + (j - death_by_age[i][0])
+                    * (death_by_age[i + 1][1] - death_by_age[i][1])
+                    / (death_by_age[i + 1][0] - death_by_age[i][0]),
+                ]
+            )
+    temp_death_by_age = np.array(temp_death_by_age)
+    df = pd.DataFrame({"x": temp_death_by_age[:, 0], "y": temp_death_by_age[:, 1]})
+    # Compute the average change over the interval
+    df["y_change"] = df["y"].diff(periods=interval) / interval
+    plt.plot(df["x"], df["y_change"], label="Old age", color="blue")
+
+    # Interpolate data for death_by_culling
+    temp_death_by_culling = []
+    for i in range(len(death_by_culling) - 1):
+        for j in range(int(death_by_culling[i][0]), int(death_by_culling[i + 1][0])):
+            temp_death_by_culling.append(
+                [
+                    j,
+                    death_by_culling[i][1]
+                    + (j - death_by_culling[i][0])
+                    * (death_by_culling[i + 1][1] - death_by_culling[i][1])
+                    / (death_by_culling[i + 1][0] - death_by_culling[i][0]),
+                ]
+            )
+    temp_death_by_culling = np.array(temp_death_by_culling)
+    df = pd.DataFrame(
+        {"x": temp_death_by_culling[:, 0], "y": temp_death_by_culling[:, 1]}
+    )
+    # Compute the average change over the interval
+    df["y_change"] = df["y"].diff(periods=interval) / interval
+    plt.plot(df["x"], df["y_change"], label="Culled", color="orange")
+
+    # Starvation
+    df = pd.DataFrame({"x": death_by_starvation[:, 0], "y": death_by_starvation[:, 1]})
+    # Compute the average change over the interval
+    df["y_change"] = df["y"].diff(periods=interval) / interval
+    plt.plot(df["x"], df["y_change"], label="Starved", color="green")
+
+    # Predator
+    df = pd.DataFrame({"x": death_by_predator[:, 0], "y": death_by_predator[:, 1]})
+    # Compute the average change over the interval
+    df["y_change"] = df["y"].diff(periods=interval) / interval
+    plt.plot(df["x"], df["y_change"], label="Eaten", color="red")
+
+    if latest_step > max_steps / 2:
+        plt.axvline(
+            x=max_steps / 2,
+            color="grey",
+            linestyle="--",
+            linewidth=2,
+            label="Intrusion added",
+        )
+    plt.title(
+        f"Rolling average cause of death per timestep over the last {interval} timesteps"
+    )
+    plt.xlabel("Time Step")
+    plt.legend()
+    if is_save:
+        plt.savefig(image_folder_path + "death_plot_average.png")
+    plt.show()
+
+
+def create_predator_death_by_age(
+    predator_death_by_age,
+    predator_death_by_starvation,
+    latest_step,
+    max_steps,
+    is_save=False,
+    image_folder_path="",
+):
     plt.plot(
         death_by_age[:, 0],
         death_by_age[:, 1],
@@ -247,6 +361,7 @@ def visualize(root_path=ROOT_PATH, folder_name=FOLDER_NAME_DEFAULT):
     config = load_config(config_path)
     simulation = config["simulation"]
     max_steps = simulation["max_steps"]
+    predator_reintroduction = predator_reintroduction.reshape(-1, 2)
 
     create_population_dynamic_plot(
         reindeer_population,
@@ -260,7 +375,6 @@ def visualize(root_path=ROOT_PATH, folder_name=FOLDER_NAME_DEFAULT):
 
     create_death_plot(
         death_by_age,
-        death_by_predator,
         death_by_starvation,
         death_by_predator,
         death_by_culling,

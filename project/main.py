@@ -56,6 +56,10 @@ def main():
     max_reindeer_population = simulation["max_reindeer_population"]
     isPlotResults = simulation["is_plot_results"]
     capture_interval = simulation["capture_interval"]
+    set_seed = simulation["set_seed"]
+    seed_number = simulation["seed_number"]
+    if set_seed == True:
+        np.random.seed(seed_number)
     #############################
     ## Reindeer parameters
     #############################
@@ -335,11 +339,18 @@ def main():
 
         # Intrusion logic
         if step == max_steps // 2:
-            intrusion_center_relative = tuple(intrusion["center_relative_grid"])
-            intrusion_center = (
-                intrusion_center_relative[0] * grid_size[0],
-                intrusion_center_relative[1] * grid_size[1],
-            )
+            if not intrusion["center_relative_grid"] == None:
+                intrusion_center_relative = tuple(intrusion["center_relative_grid"])
+            else:
+                intrusion_center_relative = None
+
+            if intrusion_center_relative == None:
+                intrusion_center = None
+            else:
+                intrusion_center = (
+                    intrusion_center_relative[0] * grid_size[0],
+                    intrusion_center_relative[1] * grid_size[1],
+                )
 
             intrusion_radius = intrusion["radius"]
 

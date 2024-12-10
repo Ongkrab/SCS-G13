@@ -8,8 +8,10 @@ import os
 import argparse
 import visualization
 
+
 # from matplotlib.colors import ListedColormap, BoundaryNorm
 from helper import *
+from animate import *
 from pynput import keyboard
 
 stop_loop = False
@@ -54,7 +56,6 @@ def main():
     culling_rate = simulation["culling_rate"]
     culling_threshold = simulation["culling_threshold"]
     max_reindeer_population = simulation["max_reindeer_population"]
-    isPlotResults = simulation["is_plot_results"]
     capture_interval = simulation["capture_interval"]
     set_seed = simulation["set_seed"]
     seed_number = simulation["seed_number"]
@@ -365,65 +366,28 @@ def main():
             grid_size[0],
         )
 
-
         # Plot the environment
-        if isAnimate:
-            plt.imshow(
-                food_grid,
-                cmap="Greens",
-                extent=(0, grid_size[1], 0, grid_size[0]),
-            )
-            if intrusion_center is not None and intrusion_radius is not None:
-                circle = Circle(
-                    (intrusion_center[1], intrusion_center[0]),
-                    intrusion_radius,
-                    color="grey",
-                    alpha=1,
-                )
-                plt.gca().add_artist(circle)
-            if reindeers:
-                reindeer_positions = np.array([r.position for r in reindeers])
-                plt.scatter(
-                    reindeer_positions[:, 1],
-                    reindeer_positions[:, 0],
-                    c="blue",
-                    label="Reindeer",
-                    alpha=0.7,
-                )
-            if predators:
-                predator_positions = np.array([p.position for p in predators])
-                plt.scatter(
-                    predator_positions[:, 1],
-                    predator_positions[:, 0],
-                    c="red",
-                    label="Predators",
-                    alpha=0.7,
-                )
-            plt.title(f"Step {step}")
-            plt.legend()
-            plt.pause(0.00001)
-            plt.clf()
-
-        if step % capture_interval == 0:
-            plot_simulation_step(
-                grid_size,
-                intrusion_center,
-                intrusion_radius,
-                food_grid,
-                result_image_path,
-                reindeers,
-                predators,
-                step,
-            )
+        plot_simulation_step(
+            grid_size,
+            intrusion_center,
+            intrusion_radius,
+            food_grid,
+            result_image_path,
+            reindeers,
+            predators,
+            step,
+            isAnimate=isAnimate,
+            capture_interval=capture_interval,
+        )
 
         # Stop if no reindeer are left
         if len(reindeers) == 0:
             print("All reindeer have been hunted.")
             break
 
-    # if stop_loop == False:
-    #     plt.show()
-
+    #############################
+    ## End of simulation loop
+    #############################
     endTime = time.time()
     difference = endTime - startTime
     minutes = difference // 60
@@ -499,54 +463,6 @@ def main():
 
     if isPlotResults:
         visualization.visualize(root_path=RESULT_PATH, folder_name=current_time)
-
-
-def plot_simulation_step(
-    grid_size,
-    intrusion_center,
-    intrusion_radius,
-    food_grid,
-    result_image_path,
-    reindeers,
-    predators,
-    step,
-):
-    plt.imshow(
-        food_grid,
-        cmap="Greens",
-        extent=(0, grid_size[1], 0, grid_size[0]),
-    )
-    if intrusion_center is not None and intrusion_radius is not None:
-        circle = Circle(
-            (intrusion_center[1], intrusion_center[0]),
-            intrusion_radius,
-            color="grey",
-            alpha=1,
-        )
-        plt.gca().add_artist(circle)
-    if reindeers:
-        reindeer_positions = np.array([r.position for r in reindeers])
-        plt.scatter(
-            reindeer_positions[:, 1],
-            reindeer_positions[:, 0],
-            c="blue",
-            label="Reindeer",
-            alpha=0.7,
-        )
-    if predators:
-        predator_positions = np.array([p.position for p in predators])
-        plt.scatter(
-            predator_positions[:, 1],
-            predator_positions[:, 0],
-            c="red",
-            label="Predators",
-            alpha=0.7,
-        )
-    plt.title(f"Step {step}")
-    plt.legend()
-    plt.savefig(result_image_path + f"step_{step}.png")
-    plt.clf()
-    plt.close()
 
 
 if __name__ == "__main__":

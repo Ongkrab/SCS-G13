@@ -83,8 +83,8 @@ class Predator:
                 direction = median_position - self.position
                 self.velocity = (
                     direction / np.linalg.norm(direction)
-                ) * self.hunt_speed 
-                
+                ) * self.hunt_speed
+
         else:
             # Patrolling: Adjust direction with Gaussian noise
             # direction += np.random.normal(0, std_dev, 2)  # Gaussian adjustment #TODO: Walking direction
@@ -175,3 +175,6 @@ class Predator:
         self.age += 1
         # if self.age > self.max_age:
         #     self.energy = 0.0
+
+    def get_alpha(self):
+        return 0.3 + 0.6 * (1 - self.age / self.max_age)

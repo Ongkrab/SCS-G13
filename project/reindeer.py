@@ -53,6 +53,9 @@ class Reindeer:
     def get_position(self):
         return self.position
 
+    def get_alpha(self):
+        return 0.3 + 0.6 * (1 - self.age / self.max_age)
+
     def move(
         self,
         food_grid,

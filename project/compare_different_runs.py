@@ -6,10 +6,10 @@ import os
 
 ROOT_PATH = "./results/"
 CONFIG_PATH = "./config.json"
-FOLDER_NAMES = ["20241209-133734", "20241209-132448"]
+FOLDER_NAMES = ["intrusion0_2", "intrusion20_2", "intrusion40_2"]
 IMAGE_FOLDER_NAME = "images"
 
-def create_population_dynamic_plot_multi_run(
+def create_population_dynamics_multi_run(
     FOLDER_NAMES,
     ROOT_PATH,
     max_steps=10000,
@@ -56,7 +56,33 @@ def create_population_dynamic_plot_multi_run(
     plt.tight_layout(rect=[0, 0, 0.85, 1])
     plt.show()
 
-
+def create_culling_statistics_multi_run(
+        FOLDER_NAMES,
+        ROOT_PATH,
+        max_steps=10000,
+        is_save=False,
+        image_folder_path="",
+):
+    plt.figure(figsize=(12, 8))
+    for i, folder_name in enumerate(FOLDER_NAMES):
+        culling_statistics = genfromtxt(f"{ROOT_PATH}{folder_name}/culling_statistics.csv", delimiter=',')
+        config = helper.load_config(f"{ROOT_PATH}{folder_name}/config.json")
+        intrusion_radius = config["intrusion"]["radius"]
+        plt.plot(culling_statistics[:, 0], culling_statistics[:, 1], label=f"Culling Statistics - Intrusion Radius: {intrusion_radius}")
+    plt.axvline(
+        x=max_steps / 2,
+        color="grey",
+        linestyle="--",
+        linewidth=2,
+        label="Intrusion added",
+    )
+    plt.xlabel("Time Step")
+    plt.ylabel("Culling Statistics")
+    plt.title("Culling Statistics for Different Intrusion Radii")
+    plt.legend()
+    plt.tight_layout(rect=[0, 0, 0.85, 1])
+    plt.show()
 
 if __name__ == "__main__":
-    create_population_dynamic_plot_multi_run(FOLDER_NAMES, ROOT_PATH)
+    create_population_dynamics_multi_run(FOLDER_NAMES, ROOT_PATH)
+    create_culling_statistics_multi_run(FOLDER_NAMES, ROOT_PATH)

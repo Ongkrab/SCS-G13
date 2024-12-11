@@ -45,7 +45,7 @@ def create_population_dynamic_plot(
     plt.title("Population Dynamics")
     plt.legend()
     if is_save:
-        plt.savefig(image_folder_path + "population_dynamics.png")
+        plt.savefig(image_folder_path + "population_dynamics.svg")
     plt.show()
 
 
@@ -70,7 +70,7 @@ def create_culling_statistics_plot(
     plt.xlabel("Time Step")
     plt.ylabel("Amount culled each season")
     if is_save:
-        plt.savefig(image_folder_path + "culling_statistics.png")
+        plt.savefig(image_folder_path + "culling_statistics.svg")
     plt.show()
 
 
@@ -116,7 +116,7 @@ def create_death_plot(
     plt.ylabel("Total amount")
     plt.legend()
     if is_save:
-        plt.savefig(image_folder_path + "death_plot.png")
+        plt.savefig(image_folder_path + "death_plot.svg")
     plt.show()
 
     # Define the interval for comparison
@@ -188,7 +188,7 @@ def create_death_plot(
     plt.xlabel("Time Step")
     plt.legend()
     if is_save:
-        plt.savefig(image_folder_path + "death_plot_average.png")
+        plt.savefig(image_folder_path + "death_plot_average.svg")
     plt.show()
 
 
@@ -227,7 +227,7 @@ def create_predator_death_by_age(
     plt.ylabel("Total amount")
     plt.legend()
     if is_save:
-        plt.savefig(image_folder_path + "predator_death_by_age.png")
+        plt.savefig(image_folder_path + "predator_death_by_age.svg")
 
     plt.show()
 
@@ -275,7 +275,7 @@ def reindeer_clustering_coefficient_plot(
     plt.title("Reindeer clustering coefficient")
     plt.legend()
     if is_save:
-        plt.savefig(image_folder_path + "reindeer_clustering_coefficient.png")
+        plt.savefig(image_folder_path + "reindeer_clustering_coefficient.svg")
     plt.show()
 
 

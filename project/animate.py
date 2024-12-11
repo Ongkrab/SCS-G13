@@ -57,6 +57,6 @@ def plot_simulation_step(
             plt.pause(0.00001)
             # plt.pause(0.01)
         if isCapture:
-            plt.savefig(result_image_path + f"step_{step}.png")
+            plt.savefig(result_image_path + f"step_{step}.svg")
             plt.close()
         plt.clf()

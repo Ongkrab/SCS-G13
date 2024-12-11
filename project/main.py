@@ -55,6 +55,7 @@ def main():
     reproduction_interval = simulation["reproduction_interval"]
     culling_rate = simulation["culling_rate"]
     culling_threshold = simulation["culling_threshold"]
+    is_coeffient_calculate = simulation["is_coeffient_calculate"]
     max_reindeer_population = simulation["max_reindeer_population"]
     capture_interval = simulation["capture_interval"]
     set_seed = simulation["set_seed"]
@@ -188,7 +189,7 @@ def main():
     death_by_starvation = [[0, 0]]
     predator_death_by_age = [[0, 0]]
     predator_death_by_starvation = [[0, 0]]
-    reindeer_clusterings_coefficient = np.zeros(max_steps)
+    reindeer_clusterings_coefficient = []
 
     print("Initialized Complete.")
     startTime = time.time()
@@ -359,12 +360,14 @@ def main():
         reindeer_positions_x = np.array([r.get_position()[0] for r in reindeers])
         reindeer_positions_y = np.array([r.get_position()[1] for r in reindeers])
 
-        reindeer_clusterings_coefficient[step] = global_clustering(
-            reindeer_positions_x,
-            reindeer_positions_y,
-            reindeer_protected_range,
-            grid_size[0],
-        )
+        if is_coeffient_calculate:
+            clustering = global_clustering(
+                reindeer_positions_x,
+                reindeer_positions_y,
+                reindeer_protected_range,
+                grid_size[0],
+            )
+            reindeer_clusterings_coefficient.append(clustering)
 
         # Plot the environment
         plot_simulation_step(

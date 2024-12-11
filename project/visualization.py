@@ -241,6 +241,9 @@ def reindeer_clustering_coefficient_plot(
     is_save=False,
     image_folder_path="",
 ):
+    if len(reindeer_clustering_coefficient) == 0:
+        print("No clustering coefficient data")
+        return
     cluster_color = "tab:brown"
     fig, ax1 = plt.subplots()
     ax1.set_xlabel("Time Step")
@@ -251,6 +254,7 @@ def reindeer_clustering_coefficient_plot(
         color=cluster_color,
     )
     ax1.tick_params(axis="y", labelcolor=cluster_color)
+    ax1.legend()
 
     ax2 = ax1.twinx()
     ax2.plot(reindeer_population, label="Reindeer Population", color="blue")

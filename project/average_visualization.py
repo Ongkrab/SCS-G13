@@ -7,6 +7,7 @@ import os
 
 ROOT_PATH = "./results/"
 CONFIG_PATH = "./config.json"
+INTRUSION_INTEREST = [10, 50, 60, 70, 80]
 FOLDER_NAMES = [
     "20241213-131030",
     "20241213-131101",
@@ -198,8 +199,6 @@ def average_population_dynamics(
         }
     )
 
-    indexs = [10, 50, 80]
-
     average_reindeer_population = grouped_data["reindeer_population"]
     average_predator_population = grouped_data["predator_population"]
 
@@ -211,7 +210,7 @@ def average_population_dynamics(
     # Plot the population dynamics
     plt.figure(figsize=(12, 8))
     for intrusion_radius in average_reindeer_population.index:
-        if intrusion_radius not in indexs:
+        if intrusion_radius not in INTRUSION_INTEREST:
             continue
         plt.plot(
             average_reindeer_population[intrusion_radius],
@@ -317,35 +316,41 @@ def average_culling_statistics(
     is_save=False,
     image_folder_path="",
 ):
+    # Merge the culling statistics with the configuration data to get the intrusion radius
+    # Group the data by the specified column and calculate the mean of the second column
+
+    grouped_data = df.groupby(group_by).agg(
+        {
+            "culling_statistics": ["mean"],
+        }
+    )
+
+    average_culling_statistic = grouped_data["culling_statistics"]["mean"]
 
     label = convert_to_title_case(group_by)
     save_file_name = (
         f"{ROOT_PATH}{image_folder_path}/average_culling_statistics_{group_by}.svg"
     )
 
-    # Plot the culling statistics
     plt.figure(figsize=(12, 8))
 
-    for culling_statistics in df["culling_statistics"]:
-        print(culling_statistics)
-        intrusion_radius = culling_statistics[0][0]
-        plt.plot(
-            culling_statistics[:, 0],
-            culling_statistics[:, 1],
-            label=f"Culling Statistics - {label}: {intrusion_radius}",
+    for intrusion_radius in average_culling_statistic.index:
+        if intrusion_radius not in INTRUSION_INTEREST:
+            continue
+        x_value = average_culling_statistic[intrusion_radius][:, 0]
+        y_value = average_culling_statistic[intrusion_radius][:, 1]
+
+        plt.plot(  # Plot the average culling statistics
+            x_value,
+            y_value,
+            label=f"Culling Statistic - {label}: {intrusion_radius}",
         )
-    plt.axvline(
-        x=max_steps / 2,
-        color="grey",
-        linestyle="--",
-        linewidth=2,
-        label="Intrusion added",
-    )
-    plt.xlabel("Time Step")
-    plt.ylabel("Culling Statistics")
-    plt.title("Culling Statistics for Different Intrusion Radii")
+    plt.xlabel(label)
+    plt.ylabel("Average Culling Statistic")
+    plt.title(f"Average Culling Statistic by {label}")
     plt.legend()
-    plt.tight_layout(rect=[0, 0, 0.85, 1])
+    plt.grid(True)
+
     if is_save:
         plt.savefig(save_file_name)
     plt.show()
@@ -354,6 +359,7 @@ def average_culling_statistics(
 if __name__ == "__main__":
     df = read_results(FOLDER_NAMES, ROOT_PATH, group_by="intrusion.radius")
     average_population_dynamics(df, group_by="intrusion_radius", is_save=True)
-    # average_population_dynamics(df, group_by="food_regeneration_rate")
     error_bar_population_dynamics(df, group_by="intrusion_radius", is_save=True)
-    # average_culling_statistics(df, group_by="intrusion_radius") # Haven't Average Culling Statistics yet
+    average_culling_statistics(
+        df, group_by="intrusion_radius", is_save=True
+    )  # Haven't Average Culling Statistics yet

@@ -5,5 +5,6 @@
 *.pyc
 /build
 /dist
+/simulate
 reindeer-project.spec
 config.json

@@ -8,13 +8,98 @@ import os
 ROOT_PATH = "./results/"
 CONFIG_PATH = "./config.json"
 FOLDER_NAMES = [
-    "20241210-182438",
-    "20241210-182514",
-    "20241210-182629",
-    "20241210-183523",
-    "20241210-183554",
+    "20241213-131030",
+    "20241213-131101",
+    "20241213-131132",
+    "20241213-131226",
+    "20241213-131258",
+    "20241213-131325",
+    "20241213-131337",
+    "20241213-131437",
+    "20241213-131920",
+    "20241213-131928",
+    "20241213-132148",
+    "20241213-132224",
+    "20241213-132327",
+    "20241213-132348",
+    "20241213-132521",
+    "20241213-132757",
+    "20241213-132928",
+    "20241213-133002",
+    "20241213-133042",
+    "20241213-133127",
+    "20241213-133243",
+    "20241213-133713",
+    "20241213-133747",
+    "20241213-133836",
+    "20241213-133918",
+    "20241213-134016",
+    "20241213-134115",
+    "20241213-134225",
+    "20241213-134339",
+    "20241213-134500",
+    "20241213-134632",
+    "20241213-134733",
+    "20241213-134838",
+    "20241213-135031",
+    "20241213-135110",
+    "20241213-135657",
+    "20241213-135717",
+    "20241213-135728",
+    "20241213-140110",
+    "20241213-140221",
+    "20241213-141231",
+    "20241213-141335",
+    "20241213-141424",
+    "20241213-141429",
+    "20241213-141620",
+    "20241213-141638",
+    "20241213-141649",
+    "20241213-141656",
+    "20241213-142033",
+    "20241213-142103",
+    "20241213-142558",
+    "20241213-142705",
+    "20241213-142809",
+    "20241213-142829",
+    "20241213-143009",
+    "20241213-143050",
+    "20241213-143109",
+    "20241213-143128",
+    "20241213-143152",
+    "20241213-143158",
+    "20241213-143936",
+    "20241213-143942",
+    "20241213-144032",
+    "20241213-144044",
+    "20241213-144157",
+    "20241213-144304",
+    "20241213-144352",
+    "20241213-144406",
+    "20241213-144544",
+    "20241213-144635",
+    "20241213-145300",
+    "20241213-145323",
+    "20241213-145342",
+    "20241213-145408",
+    "20241213-145447",
+    "20241213-145534",
+    "20241213-145620",
+    "20241213-145710",
+    "20241213-150007",
+    "20241213-150011",
+    "20241213-150248",
+    "20241213-150313",
+    "20241213-150403",
+    "20241213-150414",
+    "20241213-150542",
+    "20241213-150642",
+    "20241213-150703",
+    "20241213-150841",
+    "20241213-150935",
+    "20241213-150942",
 ]
-IMAGE_FOLDER_NAME = "images"
+IMAGE_FOLDER_NAME = "merges/images"
 
 
 def convert_to_title_case(s):
@@ -113,15 +198,21 @@ def average_population_dynamics(
         }
     )
 
+    indexs = [10, 50, 80]
+
     average_reindeer_population = grouped_data["reindeer_population"]
     average_predator_population = grouped_data["predator_population"]
 
     label = convert_to_title_case(group_by)
-    save_file_name = f"{image_folder_path}/average_population_dynamics_{group_by}.svg"
+    save_file_name = (
+        f"{ROOT_PATH}{image_folder_path}/average_population_dynamics_{group_by}.svg"
+    )
 
     # Plot the population dynamics
     plt.figure(figsize=(12, 8))
     for intrusion_radius in average_reindeer_population.index:
+        if intrusion_radius not in indexs:
+            continue
         plt.plot(
             average_reindeer_population[intrusion_radius],
             label=f"Reindeer Population - {label}: {intrusion_radius}",
@@ -150,6 +241,75 @@ def average_population_dynamics(
     plt.show()
 
 
+import matplotlib.pyplot as plt
+
+
+def error_bar_population_dynamics(
+    df, group_by="intrusion_radius", is_save=False, image_folder_path=IMAGE_FOLDER_NAME
+):
+    # Group the data by the specified column and calculate the mean and standard deviation
+    grouped_data = df.groupby(group_by).agg(
+        {
+            "reindeer_population": ["mean"],
+            "predator_population": ["mean"],
+        }
+    )
+
+    mean_reindeer_population = grouped_data["reindeer_population"]["mean"]
+    mean_predator_population = grouped_data["predator_population"]["mean"]
+
+    mean_reindeers = []
+    mean_predators = []
+    std_reindeers = []
+    std_predators = []
+
+    for intrusion_radius in mean_reindeer_population.index:
+        mean_reindeer = mean_reindeer_population[intrusion_radius].mean()
+        std_reindeer = mean_reindeer_population[intrusion_radius].std()
+
+        mean_predator = mean_predator_population[intrusion_radius].mean()
+        std_predator = mean_predator_population[intrusion_radius].std()
+
+        mean_reindeers.append(mean_reindeer)
+        mean_predators.append(mean_predator)
+        std_reindeers.append(std_reindeer)
+        std_predators.append(std_predator)
+
+    label = convert_to_title_case(group_by)
+    save_file_name = (
+        f"{ROOT_PATH}{image_folder_path}/error_bar_population_dynamics_{group_by}.svg"
+    )
+
+    x_axis = mean_reindeer_population.index
+    # Plot the mean population dynamics with error bars
+    plt.figure(figsize=(10, 6))
+    plt.errorbar(
+        x_axis,
+        mean_reindeers,
+        yerr=std_reindeers,
+        label="Reindeer Population",
+        fmt="o",
+        capsize=5,
+    )
+    plt.errorbar(
+        x_axis,
+        mean_predators,
+        yerr=std_predators,
+        label="Predator Population",
+        fmt="o",
+        capsize=5,
+    )
+    plt.xlabel(label)
+    plt.ylabel("Population")
+    plt.title(f"Population Dynamics with Error Bars by {label}")
+    plt.legend()
+    plt.grid(True)
+
+    if is_save:
+        plt.savefig(save_file_name)
+    plt.show()
+
+
 def average_culling_statistics(
     df,
     group_by="intrusion_radius",
@@ -159,7 +319,9 @@ def average_culling_statistics(
 ):
 
     label = convert_to_title_case(group_by)
-    save_file_name = f"{image_folder_path}/average_culling_statistics.svg"
+    save_file_name = (
+        f"{ROOT_PATH}{image_folder_path}/average_culling_statistics_{group_by}.svg"
+    )
 
     # Plot the culling statistics
     plt.figure(figsize=(12, 8))
@@ -191,6 +353,7 @@ def average_culling_statistics(
 
 if __name__ == "__main__":
     df = read_results(FOLDER_NAMES, ROOT_PATH, group_by="intrusion.radius")
-    average_population_dynamics(df, group_by="intrusion_radius")
-    average_population_dynamics(df, group_by="food_regeneration_rate")
+    average_population_dynamics(df, group_by="intrusion_radius", is_save=True)
+    # average_population_dynamics(df, group_by="food_regeneration_rate")
+    error_bar_population_dynamics(df, group_by="intrusion_radius", is_save=True)
     # average_culling_statistics(df, group_by="intrusion_radius") # Haven't Average Culling Statistics yet

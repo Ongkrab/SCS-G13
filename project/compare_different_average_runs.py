@@ -7,10 +7,11 @@ import os
 ROOT_PATH = "./results/"
 CONFIG_PATH = "./config.json"
 
-FOLDER_NAMES_LIST = [["1","2","3","4","5","6","7","8","9","10"], \\
-                     ["1i","2i","3i","4i","5i","6i","7i","8i","9i","10i"], \\
-                     ["1i","2i","3i","4i","5i","6i","7i","8i","9i","10i"], \\
-                     ["1i","2i","3i","4i","5i","6i","7i","8i","9i","10i"]]
+FOLDER_NAMES_LIST = [["seed1_intrusion0","seed2_intrusion0","seed3_intrusion0","seed4_intrusion0", "seed5_intrusion0"],
+                     ["seed1_intrusion20","seed2_intrusion20","seed3_intrusion20","seed4_intrusion20", "seed5_intrusion20"],
+                     ["seed1_intrusion40","seed2_intrusion40","seed3_intrusion40","seed4_intrusion40", "seed5_intrusion40"],
+                     ["seed1_intrusion60","seed2_intrusion60","seed3_intrusion60","seed4_intrusion60", "seed5_intrusion60"],
+                     ["seed1_intrusion80","seed2_intrusion80","seed3_intrusion80","seed4_intrusion80", "seed5_intrusion80"]]
 
 IMAGE_FOLDER_NAME = "images"
 
@@ -116,7 +117,66 @@ def create_culling_statistics_multi_run(
         dif_list.append(dif)
 
     print(dif_list)
+
+
+def create_culling_drop_scatter_plot(
+    FOLDER_NAMES_LIST,
+    ROOT_PATH,
+    max_steps=10000,
+    is_save=False,
+    image_folder_path="",
+):
+    """
+    Creates a scatter plot showing percentage drop in culling vs. intrusion radius.
+    """
+    culling_drop_percentages = []
+    intrusion_radii = []
+
+    for k, folder_names_current in enumerate(FOLDER_NAMES_LIST):
+        # Calculate average culling for the last 5000 steps
+        total_culling_last_5000 = []
+        intrusion_radius = None
+        for folder_name in folder_names_current:
+            culling_statistics = genfromtxt(
+                f"{ROOT_PATH}{folder_name}/culling_statistics.csv", delimiter=","
+            )
+            half_steps = int(len(culling_statistics) / 2)
+            avg_culling = np.sum(culling_statistics[-half_steps:, 1])
+            total_culling_last_5000.append(avg_culling)
+
+            # Get the intrusion radius
+            config = helper.load_config(f"{ROOT_PATH}{folder_name}/config.json")
+            intrusion_radius = config["intrusion"]["radius"]
+
+        # Average across seeds
+        avg_culling_with_intrusion = np.sum(total_culling_last_5000)
+
+        if k == 0:
+            baseline_culling = avg_culling_with_intrusion  # Intrusion radius = 0
+        
+        culling_drop_percent = (
+            (baseline_culling - avg_culling_with_intrusion) / baseline_culling
+        ) * 100
+        culling_drop_percentages.append(culling_drop_percent)
+        intrusion_radii.append(intrusion_radius)
+
+    # Create the scatter plot
+    plt.figure(figsize=(8, 5))
+    plt.scatter(intrusion_radii, culling_drop_percentages, color="blue", label="Culling Drop")
+    plt.xlabel("Intrusion Radius")
+    plt.ylabel("Percentage Drop in Culling (%)")
+    plt.title("Percentage Drop in Culling vs Intrusion Radius")
+    plt.axhline(0, color="grey", linestyle="--", linewidth=1, alpha=0.8)
+    plt.legend()
+    plt.tight_layout()
+
+    if is_save:
+        plt.savefig(image_folder_path + "culling_drop_vs_intrusion_radius.png")
+
+    plt.show()
+
     
 if __name__ == "__main__":
     create_population_dynamics_multi_run(FOLDER_NAMES_LIST, ROOT_PATH)
     create_culling_statistics_multi_run(FOLDER_NAMES_LIST, ROOT_PATH)
+    create_culling_drop_scatter_plot(FOLDER_NAMES_LIST, ROOT_PATH)

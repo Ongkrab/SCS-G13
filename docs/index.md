@@ -17,7 +17,7 @@ Witness the dynamic interactions and behaviors modeled by our simulation framewo
 
 Our results are presented with detailed graphical visualizations to provide clarity and deeper insights. Below is an example representation of our analysis:
 
-![Result Visualization Example](example-result.png)
+![Result Visualization Example](./images/culling_drop_vs_intrusion_radius.svg)
 
 ---
 

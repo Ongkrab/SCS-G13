@@ -47,6 +47,7 @@ def main():
     # Assign individual variables for simulation parameters
     isAnimate = simulation["is_animate"]
     isPlotResults = simulation["is_plot_results"]
+    isRecord = simulation["is_record"]
     grid_size = tuple(simulation["grid_size"])
     num_reindeer = simulation["num_reindeer"]
     num_predators = simulation["num_predators"]
@@ -190,6 +191,12 @@ def main():
     predator_death_by_age = [[0, 0]]
     predator_death_by_starvation = [[0, 0]]
     reindeer_clusterings_coefficient = []
+
+    # Initialize lists to store simulation data for video
+    food_grid_list = []
+    reindeers_list = []
+    predators_list = []
+    steps_list = []
 
     print("Initialized Complete.")
     startTime = time.time()
@@ -383,6 +390,12 @@ def main():
             capture_interval=capture_interval,
         )
 
+        # Store data for video
+        food_grid_list.append(np.copy(food_grid))
+        reindeers_list.append(reindeers[:])
+        predators_list.append(predators[:])
+        steps_list.append(step)
+
         # Stop if no reindeer are left
         if len(reindeers) == 0:
             print("All reindeer have been hunted.")
@@ -463,6 +476,20 @@ def main():
         reindeer_clusterings_coefficient,
         delimiter=",",
     )
+
+    # Save simulation video
+    if isRecord:
+        save_simulation_video(
+            grid_size,
+            intrusion_center,
+            intrusion_radius,
+            food_grid_list,
+            "simulation.mp4",
+            reindeers_list,
+            predators_list,
+            steps_list,
+            capture_interval=capture_interval,
+        )
 
     if isPlotResults:
         visualization.visualize(root_path=RESULT_PATH, folder_name=current_time)

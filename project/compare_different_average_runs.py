@@ -107,17 +107,50 @@ def create_culling_statistics_multi_run(
     plt.tight_layout()
     plt.show()
     
-    dif_list = []
+    death_by_culling_list = []
+    death_by_starvation_list = []
+    death_by_predator_list = []
+    death_by_age_list = []
+    intrusion_radii = []
     for k in range(len(FOLDER_NAMES_LIST)):
-        dif=0
+        intrusion_radii.append(config["intrusion"]["radius"])
+        sum_death_by_culling=0
+        sum_death_by_starvation=0
+        sum_death_by_predator=0
+        sum_death_by_age=0
         for i, folder_name in enumerate(FOLDER_NAMES_LIST[k]):
             death_by_culling = genfromtxt(f"{ROOT_PATH}{folder_name}/death_by_culling.csv", delimiter=',')
-            dif+=death_by_culling[250][1]-death_by_culling[126][1] 
-        dif/=len(FOLDER_NAMES_LIST[k])
-        dif_list.append(dif)
-
-    print(dif_list)
-
+            sum_death_by_culling+=death_by_culling[250][1]-death_by_culling[126][1] 
+            death_by_starvation = genfromtxt(f"{ROOT_PATH}{folder_name}/death_by_starvation.csv", delimiter=',')
+            sum_death_by_starvation+=death_by_starvation[250][1]-death_by_starvation[126][1]
+            death_by_predator = genfromtxt(f"{ROOT_PATH}{folder_name}/death_by_predator.csv", delimiter=',')
+            sum_death_by_predator+=death_by_predator[250][1]-death_by_predator[126][1] 
+            death_by_age = genfromtxt(f"{ROOT_PATH}{folder_name}/death_by_age.csv", delimiter=',')
+            sum_death_by_age+=death_by_age[250][1]-death_by_age[126][1] 
+        sum_death_by_culling/=len(FOLDER_NAMES_LIST[k])
+        death_by_culling_list.append(sum_death_by_culling)
+        sum_death_by_starvation/=len(FOLDER_NAMES_LIST[k])
+        death_by_starvation_list.append(sum_death_by_starvation)
+        sum_death_by_predator/=len(FOLDER_NAMES_LIST[k])
+        death_by_predator_list.append(sum_death_by_predator)
+        sum_death_by_age/=len(FOLDER_NAMES_LIST[k])
+        death_by_age_list.append(sum_death_by_age)
+    death_by_culling_list = np.array(death_by_culling_list)
+    death_by_starvation_list = np.array(death_by_starvation_list)
+    death_by_predator_list = np.array(death_by_predator_list)
+    death_by_age_list = np.array(death_by_age_list)
+    death_total_list = death_by_culling_list + death_by_starvation_list + death_by_predator_list + death_by_age_list
+    plt.figure(figsize=(10, 5))
+    plt.scatter(intrusion_radii, death_by_culling_list/death_total_list*100)
+    plt.scatter(intrusion_radii, death_by_starvation_list/death_total_list*100)
+    plt.scatter(intrusion_radii, death_by_predator_list/death_total_list*100)
+    plt.scatter(intrusion_radii, death_by_age_list/death_total_list*100)
+    plt.xlabel("Intrusion Radius")
+    plt.ylabel("Cause of Death percentage of Total Deaths")
+    plt.title("Cause of Death Statistics for Different Radii")
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
 
 def create_culling_drop_scatter_plot(
     FOLDER_NAMES_LIST,

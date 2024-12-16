@@ -7,7 +7,7 @@ import pandas as pd
 
 ROOT_PATH = "./results/"
 
-FOLDER_NAME_DEFAULT = "20241209-145755"
+FOLDER_NAME_DEFAULT = "20241215-135421"
 IMAGE_FOLDER_NAME = "images"
 
 
@@ -84,6 +84,8 @@ def create_death_plot(
     is_save=False,
     image_folder_path="",
 ):
+
+    plt.figure(figsize=(10, 5))
     plt.plot(
         death_by_age[:, 0],
         death_by_age[:, 1],
@@ -118,11 +120,12 @@ def create_death_plot(
     if is_save:
         plt.savefig(image_folder_path + "death_plot.png")
     plt.show()
+    plt.close()
 
     # Define the interval for comparison
     interval = 50
     # Interpolate data for death_by_age
-
+    plt.figure(figsize=(10, 5))
     temp_death_by_age = []
     for i in range(len(death_by_age) - 1):
         for j in range(int(death_by_age[i][0]), int(death_by_age[i + 1][0])):
@@ -185,10 +188,15 @@ def create_death_plot(
     plt.title(
         f"Rolling average cause of death per timestep over the last {interval} timesteps"
     )
+    plt.ylabel("Amount of deaths")
     plt.xlabel("Time Step")
+    plt.ylim(0, 2)
+    plt.xlim(0, max_steps)
     plt.legend()
+    plt.tight_layout()
     if is_save:
         plt.savefig(image_folder_path + "death_plot_average.png")
+
     plt.show()
 
 
@@ -254,7 +262,7 @@ def reindeer_clustering_coefficient_plot(
         color=cluster_color,
     )
     ax1.tick_params(axis="y", labelcolor=cluster_color)
-    ax1.legend()
+    ax1.legend(loc="upper left")
 
     ax2 = ax1.twinx()
     ax2.plot(reindeer_population, label="Reindeer Population", color="blue")

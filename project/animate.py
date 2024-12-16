@@ -17,6 +17,7 @@ def plot_simulation_step(
 ):
     isCapture = step % capture_interval == 0
     if isAnimate == True or isCapture == True:
+        plt.figure(figsize=(10, 5))
         plt.imshow(
             food_grid,
             cmap="Greens",
@@ -57,6 +58,6 @@ def plot_simulation_step(
             plt.pause(0.00001)
             # plt.pause(0.01)
         if isCapture:
-            plt.savefig(result_image_path + f"step_{step}.png")
+            plt.savefig(result_image_path + f"step_{step}.svg")
             plt.close()
         plt.clf()

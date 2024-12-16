@@ -349,6 +349,7 @@ def create_culling_statistics_multi_run(
     death_by_age_list = []
     intrusion_radii = []
     for k in range(len(FOLDER_NAMES_LIST)):
+        config = helper.load_config(f"{ROOT_PATH}{folder_name}/config.json")
         intrusion_radii.append(config["intrusion"]["radius"])
         sum_death_by_culling=0
         sum_death_by_starvation=0

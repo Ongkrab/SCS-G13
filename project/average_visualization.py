@@ -524,6 +524,7 @@ def average_culling_cause_statistics(
         {
             "culling_statistics": ["mean"],
             "death_by_culling": ["mean"],
+            "death_by_age": ["mean"],
             "death_by_predator": ["mean"],
             "death_by_starvation": ["mean"],
         }
@@ -533,6 +534,7 @@ def average_culling_cause_statistics(
     average_death_by_culling = grouped_data["death_by_culling"]["mean"]
     average_death_by_predator = grouped_data["death_by_predator"]["mean"]
     average_death_by_starvation = grouped_data["death_by_starvation"]["mean"]
+    average_death_by_age = grouped_data["death_by_age"]["mean"]
 
     label = convert_to_title_case(group_by)
     save_file_name = (
@@ -575,6 +577,14 @@ def average_culling_cause_statistics(
             x_starvation,
             y_starvation,
             label=f"Death by Starvation - {label}: {intrusion_radius}",
+        )
+
+        x_age = average_death_by_age[intrusion_radius][:, 0]
+        y_age = average_death_by_age[intrusion_radius][:, 1]
+        plt.plot(
+            x_age,
+            y_age,
+            label=f"Death by Age - {label}: {intrusion_radius}",
         )
 
     plt.xlabel(label)
@@ -769,9 +779,9 @@ if __name__ == "__main__":
     # intrusion_interest = [
     #     70,
     # ]
-    # average_culling_cause_statistics(
-    #     df,
-    #     group_by="intrusion_radius",
-    #     is_save=True,
-    #     intrusion_interest=intrusion_interest,
-    # )
+    average_culling_cause_statistics(
+        df,
+        group_by="intrusion_radius",
+        is_save=True,
+        intrusion_interest=intrusion_interest,
+    )

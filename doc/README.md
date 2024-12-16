@@ -19,7 +19,7 @@
 - [License](#license) -->
 
 ## Installation
-At visual studiio:
+At visual studio:
 1. Create ennvironment command + shift + p 
 2. Type python create environment
 3. Select Venv

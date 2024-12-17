@@ -479,6 +479,7 @@ def main():
 
     # Save simulation video
     if isRecord:
+        print("Saving simulation video...")
         save_simulation_video(
             grid_size,
             intrusion_center,
@@ -490,6 +491,7 @@ def main():
             steps_list,
             capture_interval=capture_interval,
         )
+        print("Simulation video saved.")
 
     if isPlotResults:
         visualization.visualize(root_path=RESULT_PATH, folder_name=current_time)

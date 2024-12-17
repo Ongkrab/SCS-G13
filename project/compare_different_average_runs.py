@@ -348,14 +348,12 @@ def create_culling_statistics_multi_run(
     death_by_predator_list = []
     death_by_age_list = []
     intrusion_radii = []
-    for k in range(len(FOLDER_NAMES_LIST)):
-        config = helper.load_config(f"{ROOT_PATH}{folder_name}/config.json")
-        intrusion_radii.append(config["intrusion"]["radius"])
+    for folder_names_current in FOLDER_NAMES_LIST:
         sum_death_by_culling=0
         sum_death_by_starvation=0
         sum_death_by_predator=0
         sum_death_by_age=0
-        for i, folder_name in enumerate(FOLDER_NAMES_LIST[k]):
+        for i, folder_name in enumerate(folder_names_current):
             death_by_culling = genfromtxt(f"{ROOT_PATH}{folder_name}/death_by_culling.csv", delimiter=',')
             sum_death_by_culling+=death_by_culling[250][1]-death_by_culling[126][1] 
             death_by_starvation = genfromtxt(f"{ROOT_PATH}{folder_name}/death_by_starvation.csv", delimiter=',')
@@ -364,6 +362,8 @@ def create_culling_statistics_multi_run(
             sum_death_by_predator+=death_by_predator[250][1]-death_by_predator[126][1] 
             death_by_age = genfromtxt(f"{ROOT_PATH}{folder_name}/death_by_age.csv", delimiter=',')
             sum_death_by_age+=death_by_age[250][1]-death_by_age[126][1] 
+            config = helper.load_config(f"{ROOT_PATH}{folder_name}/config.json")
+        intrusion_radii.append(config["intrusion"]["radius"])
         sum_death_by_culling/=len(FOLDER_NAMES_LIST[k])
         death_by_culling_list.append(sum_death_by_culling)
         sum_death_by_starvation/=len(FOLDER_NAMES_LIST[k])

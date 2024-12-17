@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 import helper
 import os
 
-ROOT_PATH = "./results/"
+ROOT_PATH = "./results/Ong_results/results/"
 CONFIG_PATH = "./config.json"
-FOLDER_NAMES = ["intrusion0_2", "intrusion20_2", "intrusion40_2"]
+FOLDER_NAMES = ["seed5_intrusion0", "seed5_intrusion60"]
 IMAGE_FOLDER_NAME = "images"
 
 def create_population_dynamics_multi_run(
@@ -53,7 +53,7 @@ def create_population_dynamics_multi_run(
     plt.ylabel("Population")
     plt.title("Population Dynamics")
     plt.legend()
-    plt.tight_layout(rect=[0, 0, 0.85, 1])
+    plt.tight_layout()
     plt.show()
 
 def create_culling_statistics_multi_run(
@@ -80,7 +80,7 @@ def create_culling_statistics_multi_run(
     plt.ylabel("Culling Statistics")
     plt.title("Culling Statistics for Different Intrusion Radii")
     plt.legend()
-    plt.tight_layout(rect=[0, 0, 0.85, 1])
+    plt.tight_layout()
     plt.show()
 
 if __name__ == "__main__":

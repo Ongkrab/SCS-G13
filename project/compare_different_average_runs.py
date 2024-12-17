@@ -6,7 +6,7 @@ import os
 
 ROOT_PATH = "./results/"
 CONFIG_PATH = "./config.json"
-ROOT_PATH3 = "./results/"
+ROOT_PATH3 = "./results/Ong_results/results/"
 
 FOLDER_NAMES_LIST1 = [
     [
@@ -54,55 +54,16 @@ FOLDER_NAMES_LIST1 = [
 ]
 
 FOLDER_NAMES_LIST2 = [
-    [
-        "seed1_intrusion0",
-        "seed2_intrusion0",
-        "seed3_intrusion0",
-        "seed4_intrusion0",
-        "seed5_intrusion0",
-    ],
-    [
-        "seed1_intrusion20",
-        "seed2_intrusion20",
-        "seed3_intrusion20",
-        "seed4_intrusion20",
-        "seed5_intrusion20",
-    ],
-    [
-        "seed1_intrusion40",
-        "seed2_intrusion40",
-        "seed3_intrusion40",
-        "seed4_intrusion40",
-        "seed5_intrusion40",
-    ],
-    [
-        "seed1_intrusion50",
-        "seed2_intrusion50",
-        "seed3_intrusion50",
-        "seed4_intrusion50",
-        "seed5_intrusion50",
-    ],
-    [
-        "seed1_intrusion60",
-        "seed2_intrusion60",
-        "seed3_intrusion60",
-        "seed4_intrusion60",
-        "seed5_intrusion60",
-    ],
-    [
-        "seed1_intrusion70",
-        "seed2_intrusion70",
-        "seed3_intrusion70",
-        "seed4_intrusion70",
-        "seed5_intrusion70",
-    ],
-    [
-        "seed1_intrusion80",
-        "seed2_intrusion80",
-        "seed3_intrusion80",
-        "seed4_intrusion80",
-        "seed5_intrusion80",
-    ],
+    ["seed1_intrusion0", "seed3_intrusion0", "seed5_intrusion0", "seed7_intrusion0", "seed9_intrusion0", "seed11_intrusion0", "seed13_intrusion0", "seed15_intrusion0", "seed17_intrusion0", "seed19_intrusion0"],
+    #["seed1_intrusion10", "seed3_intrusion10", "seed5_intrusion10", "seed7_intrusion10", "seed9_intrusion10", "seed11_intrusion10", "seed13_intrusion10", "seed15_intrusion10", "seed17_intrusion10", "seed19_intrusion10"],
+    #["seed1_intrusion20", "seed3_intrusion20", "seed5_intrusion20", "seed7_intrusion20", "seed9_intrusion20", "seed11_intrusion20", "seed13_intrusion20", "seed15_intrusion20", "seed17_intrusion20", "seed19_intrusion20"],
+    ["seed1_intrusion30", "seed3_intrusion30", "seed5_intrusion30", "seed7_intrusion30", "seed9_intrusion30", "seed11_intrusion30", "seed13_intrusion30", "seed15_intrusion30", "seed17_intrusion30", "seed19_intrusion30"],
+    #["seed1_intrusion40", "seed3_intrusion40", "seed5_intrusion40", "seed7_intrusion40", "seed9_intrusion40", "seed11_intrusion40", "seed13_intrusion40", "seed15_intrusion40", "seed17_intrusion40", "seed19_intrusion40"],
+    #["seed1_intrusion50", "seed3_intrusion50", "seed5_intrusion50", "seed7_intrusion50", "seed9_intrusion50", "seed11_intrusion50", "seed13_intrusion50", "seed15_intrusion50", "seed17_intrusion50", "seed19_intrusion50"],
+    ["seed1_intrusion60", "seed3_intrusion60", "seed5_intrusion60", "seed7_intrusion60", "seed9_intrusion60", "seed11_intrusion60", "seed13_intrusion60", "seed15_intrusion60", "seed17_intrusion60", "seed19_intrusion60"],
+    #["seed1_intrusion70", "seed3_intrusion70", "seed5_intrusion70", "seed7_intrusion70", "seed9_intrusion70", "seed11_intrusion70", "seed13_intrusion70", "seed15_intrusion70", "seed17_intrusion70", "seed19_intrusion70"],
+    #["seed1_intrusion80", "seed3_intrusion80", "seed5_intrusion80", "seed7_intrusion80", "seed9_intrusion80", "seed11_intrusion80", "seed13_intrusion80", "seed15_intrusion80", "seed17_intrusion80", "seed19_intrusion80"],
+    ["seed1_intrusion90", "seed3_intrusion90", "seed5_intrusion90", "seed7_intrusion90", "seed9_intrusion90", "seed11_intrusion90", "seed13_intrusion90", "seed15_intrusion90", "seed17_intrusion90", "seed19_intrusion90"],
 ]
 
 FOLDER_NAMES_LIST3 = (
@@ -249,7 +210,7 @@ def create_population_dynamics_multi_run(
     :param image_folder_path: Path to save the image.
     """
 
-    plt.figure(figsize=(10, 5))
+    plt.figure(figsize=(8, 4))
 
     for folder_names_current in FOLDER_NAMES_LIST:
         reindeer_population = None
@@ -276,10 +237,10 @@ def create_population_dynamics_multi_run(
             reindeer_population,
             label=f"Reindeer Population - Intrusion Radius: {intrusion_radius}",
         )
-        plt.plot(
-            predator_population,
-            label=f"Predator Population - Intrusion Radius: {intrusion_radius}",
-        )
+        # plt.plot(
+        #     predator_population,
+        #     label=f"Predator Population - Intrusion Radius: {intrusion_radius}",
+        # )
 
     plt.axvline(
         x=max_steps / 2,
@@ -342,20 +303,52 @@ def create_culling_statistics_multi_run(
     plt.legend()
     plt.tight_layout()
     plt.show()
-
-    dif_list = []
-    for k in range(len(FOLDER_NAMES_LIST)):
-        dif = 0
-        for i, folder_name in enumerate(FOLDER_NAMES_LIST[k]):
-            death_by_culling = genfromtxt(
-                f"{ROOT_PATH}{folder_name}/death_by_culling.csv", delimiter=","
-            )
-            dif += death_by_culling[250][1] - death_by_culling[126][1]
-        dif /= len(FOLDER_NAMES_LIST[k])
-        dif_list.append(dif)
-
-    print(dif_list)
-
+    
+    death_by_culling_list = []
+    death_by_starvation_list = []
+    death_by_predator_list = []
+    death_by_age_list = []
+    intrusion_radii = []
+    for folder_names_current in FOLDER_NAMES_LIST:
+        sum_death_by_culling=0
+        sum_death_by_starvation=0
+        sum_death_by_predator=0
+        sum_death_by_age=0
+        for folder_name in folder_names_current:
+            death_by_culling = genfromtxt(f"{ROOT_PATH}{folder_name}/death_by_culling.csv", delimiter=',')
+            sum_death_by_culling+=death_by_culling[250][1]-death_by_culling[126][1] 
+            death_by_starvation = genfromtxt(f"{ROOT_PATH}{folder_name}/death_by_starvation.csv", delimiter=',')
+            sum_death_by_starvation+=death_by_starvation[10000][1]-death_by_starvation[5001][1]
+            death_by_predator = genfromtxt(f"{ROOT_PATH}{folder_name}/death_by_predator.csv", delimiter=',')
+            sum_death_by_predator+=death_by_predator[10000][1]-death_by_predator[5001][1] 
+            death_by_age = genfromtxt(f"{ROOT_PATH}{folder_name}/death_by_age.csv", delimiter=',')
+            sum_death_by_age+=death_by_age[250][1]-death_by_age[126][1] 
+            config = helper.load_config(f"{ROOT_PATH}{folder_name}/config.json")
+        intrusion_radii.append(config["intrusion"]["radius"])
+        sum_death_by_culling/=len(folder_names_current)
+        death_by_culling_list.append(sum_death_by_culling)
+        sum_death_by_starvation/=len(folder_names_current)
+        death_by_starvation_list.append(sum_death_by_starvation)
+        sum_death_by_predator/=len(folder_names_current)
+        death_by_predator_list.append(sum_death_by_predator)
+        sum_death_by_age/=len(folder_names_current)
+        death_by_age_list.append(sum_death_by_age)
+    death_by_culling_list = np.array(death_by_culling_list)
+    death_by_starvation_list = np.array(death_by_starvation_list)
+    death_by_predator_list = np.array(death_by_predator_list)
+    death_by_age_list = np.array(death_by_age_list)
+    death_total_list = death_by_culling_list + death_by_starvation_list + death_by_predator_list + death_by_age_list
+    plt.figure(figsize=(8, 4))
+    plt.scatter(intrusion_radii, death_by_culling_list/death_total_list*100, label="Culling")
+    plt.scatter(intrusion_radii, death_by_starvation_list/death_total_list*100, label="Starvation")
+    plt.scatter(intrusion_radii, death_by_predator_list/death_total_list*100, label="Predation")
+    plt.scatter(intrusion_radii, death_by_age_list/death_total_list*100, label="Age")
+    plt.xlabel("Intrusion Radius")
+    plt.ylabel("Cause of Death percentage of Total Deaths")
+    plt.title("Cause of Death Statistics for Different Radii")
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
 
 def create_culling_drop_scatter_plot(
     FOLDER_NAMES_LIST,
@@ -415,7 +408,7 @@ def create_culling_drop_scatter_plot(
             decreased_area_percentages.append(decreased_area_percent)
         print(intrusion_radii)
     # Create the scatter plot
-    plt.figure(figsize=(10, 5))
+    plt.figure(figsize=(8, 4))
     # Plot culling drop percentages
     # plt.errorbar(
     #     intrusion_radii,
@@ -454,8 +447,8 @@ def create_culling_drop_scatter_plot(
 
 
 if __name__ == "__main__":
-    # create_population_dynamics_multi_run(FOLDER_NAMES_LIST1, ROOT_PATH)
-    # create_culling_statistics_multi_run(FOLDER_NAMES_LIST1, ROOT_PATH)
-    create_culling_drop_scatter_plot(
-        FOLDER_NAMES_LIST3, ROOT_PATH3, image_folder_path="./images/", is_save=True
-    )
+    create_population_dynamics_multi_run(FOLDER_NAMES_LIST2, ROOT_PATH3)
+    create_culling_statistics_multi_run(FOLDER_NAMES_LIST2, ROOT_PATH3)
+    # create_culling_drop_scatter_plot(
+    #     FOLDER_NAMES_LIST2, ROOT_PATH3
+    # )

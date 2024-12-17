@@ -18,8 +18,7 @@ def plot_simulation_step(
 ):
     isCapture = step % capture_interval == 0
     if isAnimate == True or isCapture == True:
-        if isAnimate == False:
-            plt.figure(figsize=(10, 5))
+        plt.figure(figsize=(8, 4))
         plt.imshow(
             food_grid,
             cmap="Greens",
@@ -40,7 +39,7 @@ def plot_simulation_step(
                 reindeer_positions[:, 1],
                 reindeer_positions[:, 0],
                 c="blue",
-                label="Reindeer",
+                label="Preys",
                 alpha=reindeer_alphas[:],
             )
         if predators:
@@ -56,9 +55,9 @@ def plot_simulation_step(
 
         plt.title(f"Step {step}")
         plt.legend()
+        plt.tight_layout()
         if isAnimate:
             plt.pause(0.00001)
-            # plt.pause(0.01)
         if isCapture:
             plt.savefig(result_image_path + f"step_{step}.svg")
             plt.close()

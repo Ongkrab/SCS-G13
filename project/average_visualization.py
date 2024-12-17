@@ -56,6 +56,8 @@ INTRUSION_INTEREST = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
 #     "20241215-102450",
 #     "20241215-102454",
 # ]
+
+
 FOLDER_NAMES = [
     "20241213-131030",
     "20241213-131101",
@@ -275,13 +277,13 @@ def average_population_dynamics(
     )
 
     # Plot the population dynamics
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=(8, 4))
     for intrusion_radius in average_reindeer_population.index:
         if intrusion_radius not in intrusion_interest:
             continue
         plt.plot(
             average_reindeer_population[intrusion_radius],
-            label=f"Reindeer Population - {label}: {intrusion_radius}",
+            label=f"Prey Population - {label}: {intrusion_radius}",
         )
 
         if not only_reindeer:
@@ -301,15 +303,17 @@ def average_population_dynamics(
 
     plt.xlabel("Time Step")
     plt.ylabel("Population")
-    plt.title("Population Dynamics Intrusion Radius")
+    plt.title("Average Population Dynamics over 10 simulation pairs")
+    plt.xlim(0, 10000)
+
     plt.legend()
-    plt.tight_layout(rect=[0, 0, 0.85, 1])
+    plt.tight_layout()
     if is_save:
-        plt.savefig(save_file_name)
+        plt.savefig(
+            save_file_name,
+            dpi=600,
+        )
     plt.show()
-
-
-import matplotlib.pyplot as plt
 
 
 def average_population_dynamics_2axis(
@@ -333,11 +337,11 @@ def average_population_dynamics_2axis(
 
     label = convert_to_title_case(group_by)
     save_file_name = (
-        f"{ROOT_PATH}{image_folder_path}/average_population_dynamics_{group_by}.svg"
+        f"{ROOT_PATH}{image_folder_path}/population_dynamics_2axis_{group_by}.svg"
     )
 
     # Plot the population dynamics
-    fig, ax1 = plt.subplots(figsize=(10, 5))
+    fig, ax1 = plt.subplots(figsize=(8, 4))
 
     ax2 = ax1.twinx()
     ax1.set_xlabel("Time Step")
@@ -357,7 +361,7 @@ def average_population_dynamics_2axis(
             continue
         ax1.plot(
             average_reindeer_population[intrusion_radius],
-            label=f"Reindeer Population - {label}: {intrusion_radius}",
+            label=f"Prey Population - {label}: {intrusion_radius}",
             color=colors[i],
         )
 
@@ -391,7 +395,10 @@ def average_population_dynamics_2axis(
     plt.tight_layout()
     # plt.tight_layout(rect=[0, 0, 0.85, 1])
     if is_save:
-        plt.savefig(save_file_name)
+        plt.savefig(
+            save_file_name,
+            dpi=600,
+        )
     plt.show()
 
 
@@ -433,7 +440,7 @@ def error_bar_population_dynamics(
 
     x_axis = mean_reindeer_population.index
     # Plot the mean population dynamics with error bars
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(8, 4))
     plt.errorbar(
         x_axis,
         mean_reindeers,
@@ -457,7 +464,10 @@ def error_bar_population_dynamics(
     plt.grid(True)
 
     if is_save:
-        plt.savefig(save_file_name)
+        plt.savefig(
+            save_file_name,
+            dpi=300,
+        )
     plt.show()
 
 
@@ -485,7 +495,7 @@ def average_culling_statistics(
         f"{ROOT_PATH}{image_folder_path}/average_culling_statistics_{group_by}.svg"
     )
 
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=(8, 4))
 
     for intrusion_radius in average_culling_statistic.index:
         if intrusion_radius not in intrusion_interest:
@@ -505,7 +515,10 @@ def average_culling_statistics(
     plt.grid(True)
 
     if is_save:
-        plt.savefig(save_file_name)
+        plt.savefig(
+            save_file_name,
+            dpi=300,
+        )
     plt.show()
 
 
@@ -524,6 +537,7 @@ def average_culling_cause_statistics(
         {
             "culling_statistics": ["mean"],
             "death_by_culling": ["mean"],
+            "death_by_age": ["mean"],
             "death_by_predator": ["mean"],
             "death_by_starvation": ["mean"],
         }
@@ -533,13 +547,14 @@ def average_culling_cause_statistics(
     average_death_by_culling = grouped_data["death_by_culling"]["mean"]
     average_death_by_predator = grouped_data["death_by_predator"]["mean"]
     average_death_by_starvation = grouped_data["death_by_starvation"]["mean"]
+    average_death_by_age = grouped_data["death_by_age"]["mean"]
 
     label = convert_to_title_case(group_by)
     save_file_name = (
         f"{ROOT_PATH}{image_folder_path}/average_culling_statistics_{group_by}.svg"
     )
 
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=(8, 4))
 
     for intrusion_radius in average_culling_statistic.index:
         if intrusion_radius not in intrusion_interest:
@@ -577,6 +592,14 @@ def average_culling_cause_statistics(
             label=f"Death by Starvation - {label}: {intrusion_radius}",
         )
 
+        x_age = average_death_by_age[intrusion_radius][:, 0]
+        y_age = average_death_by_age[intrusion_radius][:, 1]
+        plt.plot(
+            x_age,
+            y_age,
+            label=f"Death by Age - {label}: {intrusion_radius}",
+        )
+
     plt.xlabel(label)
     plt.ylabel("Average Culling Statistic")
     plt.title(f"Average Culling Cause Statistic by {label}")
@@ -584,7 +607,10 @@ def average_culling_cause_statistics(
     plt.grid(True)
 
     if is_save:
-        plt.savefig(save_file_name)
+        plt.savefig(
+            save_file_name,
+            dpi=300,
+        )
     plt.show()
 
 
@@ -614,7 +640,7 @@ def create_predator_death_by_age(
         f"{ROOT_PATH}{image_folder_path}/average_predator_death_{group_by}.svg"
     )
 
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=(8, 4))
 
     # for intrusion_radius in average_predator_death_by_age.index:
     #     if intrusion_radius not in intrusion_interest:
@@ -657,7 +683,7 @@ def create_predator_death_by_age(
     plt.ylabel("Total amount")
     plt.legend()
     if is_save:
-        plt.savefig(save_file_name)
+        plt.savefig(save_file_name, width=720, height=360)
 
     plt.show()
 
@@ -693,7 +719,7 @@ def create_culling_drop_scatter_plot(
         intrusion_radii.append(intrusion_radius)
 
     # Create the scatter plot
-    plt.figure(figsize=(8, 5))
+    plt.figure(figsize=(8, 4))
     plt.scatter(
         intrusion_radii, culling_drop_percentages, color="blue", label="Culling Drop"
     )
@@ -706,7 +732,10 @@ def create_culling_drop_scatter_plot(
     plt.tight_layout()
 
     if is_save:
-        plt.savefig(image_folder_path + "culling_drop_vs_intrusion_radius.png")
+        plt.savefig(
+            image_folder_path + "culling_drop_vs_intrusion_radius.png",
+            dpi=300,
+        )
 
     plt.show()
 
@@ -742,12 +771,22 @@ def create_culling_drop_scatter_plot(
 if __name__ == "__main__":
     df = read_results(FOLDER_NAMES, ROOT_PATH, group_by="intrusion.radius")
     intrusion_interest = [0, 60]
+    intrusion_interest = [0, 30, 60, 90]
 
-    average_population_dynamics_2axis(
+    # average_population_dynamics_2axis(
+    #     df,
+    #     group_by="intrusion_radius",
+    #     is_save=True,
+    #     only_reindeer=False,
+    #     intrusion_interest=intrusion_interest,
+    #     image_folder_path=IMAGE_FOLDER_NAME,
+    # )
+
+    average_population_dynamics(
         df,
         group_by="intrusion_radius",
         is_save=True,
-        only_reindeer=False,
+        only_reindeer=True,
         intrusion_interest=intrusion_interest,
         image_folder_path=IMAGE_FOLDER_NAME,
     )
@@ -757,6 +796,13 @@ if __name__ == "__main__":
     #     is_save=True,
     #     intrusion_interest=intrusion_interest,
     # )  # Haven't Average Culling Statistics ye
+    # average_population_dynamics(
+    #     df,
+    #     group_by="intrusion_radius",
+    #     is_save=True,
+    #     intrusion_interest=intrusion_interest,
+    #     image_folder_path=IMAGE_FOLDER_NAME,
+    # )
 
     # average_population_dynamics(
     #     df,

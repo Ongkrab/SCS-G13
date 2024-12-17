@@ -357,9 +357,9 @@ def create_culling_statistics_multi_run(
             death_by_culling = genfromtxt(f"{ROOT_PATH}{folder_name}/death_by_culling.csv", delimiter=',')
             sum_death_by_culling+=death_by_culling[250][1]-death_by_culling[126][1] 
             death_by_starvation = genfromtxt(f"{ROOT_PATH}{folder_name}/death_by_starvation.csv", delimiter=',')
-            sum_death_by_starvation+=death_by_starvation[250][1]-death_by_starvation[126][1]
+            sum_death_by_starvation+=death_by_starvation[10000][1]-death_by_starvation[5001][1]
             death_by_predator = genfromtxt(f"{ROOT_PATH}{folder_name}/death_by_predator.csv", delimiter=',')
-            sum_death_by_predator+=death_by_predator[250][1]-death_by_predator[126][1] 
+            sum_death_by_predator+=death_by_predator[10000][1]-death_by_predator[5001][1] 
             death_by_age = genfromtxt(f"{ROOT_PATH}{folder_name}/death_by_age.csv", delimiter=',')
             sum_death_by_age+=death_by_age[250][1]-death_by_age[126][1] 
             config = helper.load_config(f"{ROOT_PATH}{folder_name}/config.json")

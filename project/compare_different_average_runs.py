@@ -353,7 +353,7 @@ def create_culling_statistics_multi_run(
         sum_death_by_starvation=0
         sum_death_by_predator=0
         sum_death_by_age=0
-        for i, folder_name in enumerate(folder_names_current):
+        for folder_name in folder_names_current:
             death_by_culling = genfromtxt(f"{ROOT_PATH}{folder_name}/death_by_culling.csv", delimiter=',')
             sum_death_by_culling+=death_by_culling[250][1]-death_by_culling[126][1] 
             death_by_starvation = genfromtxt(f"{ROOT_PATH}{folder_name}/death_by_starvation.csv", delimiter=',')

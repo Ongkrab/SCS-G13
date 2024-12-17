@@ -338,7 +338,7 @@ def create_culling_statistics_multi_run(
     death_by_predator_list = np.array(death_by_predator_list)
     death_by_age_list = np.array(death_by_age_list)
     death_total_list = death_by_culling_list + death_by_starvation_list + death_by_predator_list + death_by_age_list
-    plt.figure(figsize=(10, 5))
+    plt.figure(figsize=(8, 4))
     plt.scatter(intrusion_radii, death_by_culling_list/death_total_list*100, label="Culling")
     plt.scatter(intrusion_radii, death_by_starvation_list/death_total_list*100, label="Starvation")
     plt.scatter(intrusion_radii, death_by_predator_list/death_total_list*100, label="Predation")
@@ -408,7 +408,7 @@ def create_culling_drop_scatter_plot(
             decreased_area_percentages.append(decreased_area_percent)
         print(intrusion_radii)
     # Create the scatter plot
-    plt.figure(figsize=(10, 5))
+    plt.figure(figsize=(8, 4))
     # Plot culling drop percentages
     # plt.errorbar(
     #     intrusion_radii,

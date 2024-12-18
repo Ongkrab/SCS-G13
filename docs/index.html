@@ -9,62 +9,46 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f9;
-            color: #333;
         }
         header {
-            background: linear-gradient(90deg, #0073e6, #005bb5);
+            background-color: #0073e6;
             color: #fff;
-            padding: 1.5rem;
+            padding: 1rem;
             text-align: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        header h1 {
-            margin: 0;
-            font-size: 2.5rem;
-        }
-        header p {
-            margin: 0.5rem 0 0;
-            font-size: 1.2rem;
-            font-style: italic;
         }
         main {
-            padding: 2rem;
-            max-width: 900px;
-            margin: 2rem auto;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
         }
-        section {
-            margin-bottom: 3rem;
+        .animation-container, .result-container, .reference-container {
+            margin-bottom: 2rem;
         }
-        h1, h2 {
-            color: #0073e6;
-        }
-        .animation-container, .result-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        .animation-container img, .result-container img {
-            max-width: 100%;
+        video {
+            width: 100%;
             height: auto;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            margin-top: 1rem;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        img {
+            width: 100%;
+            height: auto;
         }
         footer {
-            text-align: center;
-            padding: 1rem;
             background-color: #0073e6;
             color: #fff;
             position: fixed;
             bottom: 0;
             width: 100%;
             font-size: 0.9rem;
+            text-align: center;
+            padding: 0.5rem;
+        }
+        @media (min-width: 600px) {
+            video {
+                width: 640px;
+                height: 360px;
+            }
+            img {
+                width: 640px;
+                height: auto;
+            }
         }
     </style>
 </head>
@@ -78,12 +62,10 @@
             <h2>Simulation Animation</h2>
             <div class="animation-container">
                 <p>Witness the dynamic interactions and behaviors modeled by our simulation framework. This animation represents one of the many scenarios our project can simulate.</p>
-                
-                <video width="640" height="360" controls>
+                <video controls>
                     <source src="./resources/videos/simulation.mp4" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
-                
             </div>
         </section>
         <section>
@@ -91,6 +73,13 @@
             <div class="result-container">
                 <p>Our results are presented with detailed graphical visualizations to provide clarity and deeper insights. Below is an example representation of our analysis:</p>
                 <img src="./resources/images/culling_drop_vs_intrusion_radius.svg" alt="Result Visualization Example">
+            </div>
+        </section>
+        <section>
+            <h2>Reference</h2>
+            <div class="reference-container">
+                <p>You can reference the code from the following GitHub repository:</p>
+                <a href="https://github.com/yourusername/yourrepository" target="_blank">GitHub Repository</a>
             </div>
         </section>
     </main>

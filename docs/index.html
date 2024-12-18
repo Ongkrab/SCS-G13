@@ -3,62 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulation Project</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background-color: #0073e6;
-            color: #fff;
-            padding: 1rem;
-            text-align: center;
-        }
-        main {
-            padding: 1rem;
-            padding-left: 15%;
-            padding-right: 15%;
-        }
-        .animation-container, .result-container, .reference-container {
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-        video {
-            width: 100%;
-            height: auto;
-        }
-        img {
-            width: 100%;
-            height: auto;
-        }
-        footer {
-            background-color: #0073e6;
-            color: #fff;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            font-size: 0.9rem;
-            text-align: center;
-            padding: 0.5rem;
-        }
-        @media (min-width: 600px) {
-            video {
-                width: 640px;
-                height: 360px;
-            }
-            img {
-                width: 640px;
-                height: auto;
-            }
-        }
-    </style>
+    <title>HERD ANIMALS WITH MODERN CHALLENGES</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>Simulation Project</h1>
-        <p>Exploring dynamic simulations and insightful results</p>
+        <h1>Simulation Of complex systems - Group 13</h1>
+        <h3>HERD ANIMALS WITH MODERN CHALLENGES</h3>
+        <p>An agent based predator prey model in a dynamic environment</p>
     </header>
     <main>
         <section>
@@ -76,19 +28,33 @@
         <section>
             <h2>Result Visualization</h2>
             <div class="result-container">
-                <p>Our results are presented with detailed graphical visualizations to provide clarity and deeper insights. Below is an example representation of our analysis:</p>
-                <img src="./resources/images/culling_drop_vs_intrusion_radius.svg" alt="Result Visualization Example">
+            <p>Our results are presented with detailed graphical visualizations to provide clarity and deeper insights. Below are examples of our analysis:</p>
+            <div class="result-item">
+                <h3>Analysis 1: Average Population Dynamic with intrusion 0 and 60</h3>
+                <img src="./resources/images/population_dynamics_2axis_intrusion_radius.svg" alt="Performance Metrics">
+            </div>
+            <div class="result-item">
+                <h3>Analysis 2: Average Population Dynamic with intrusion 10 runs</h3>
+                <img src="./resources/images/average_population_dynamics_intrusion_radius.svg" alt="Simulation Accuracy">
+            </div>
+            <div class="result-item">
+                <h3>Analysis 3: Culling drop vs intrusion radius</h3>
+                <img src="./resources/images/culling_drop_vs_intrusion_radius.svg" alt="Culling Drop vs Intrusion Radius">
+            </div>
+            <div class="result-item">
+                <h3>Analysis 4: Culling Statistic</h3>
+                <img src="./resources/images/average_culling_statistics_intrusion_radius.svg" alt="Culling Drop vs Intrusion Radius">
+            </div>
             </div>
         </section>
         <section>
-            <h2>Reference</h2>
+            <h2>References and Downloads</h2>
             <div class="reference-container">
-                <p>You can reference the code from the following GitHub repository:</p>
-                <a href="https://github.com/Ongkrab/SCS-G13.git" target="_blank">GitHub Repository</a>
-            </div>
-            <div class="reference-container">
-                <p>Download our project poster for more detailed information:</p>
-                <a href="./resources/files/scs_poster_submission.pdf" target="_blank"></a>
+                <a href="https://github.com/Ongkrab/SCS-G13.git" target="_blank">
+                    <img src="./resources/icons/github-mark.svg" alt="GitHub Icon" style="vertical-align: middle; width: 24px; height: 24px; margin-right: 8px;">
+                    GitHub Repository
+                </a>
+                <a href="./resources/files/scs_poster_submission.pdf" target="_blank" style="margin-left: 16px;">
                     <img src="./resources/icons/pdf_icon.png" alt="PDF Icon" style="vertical-align: middle; width: 24px; height: 24px; margin-right: 8px;">
                     Download Poster (PDF)
                 </a>
@@ -96,7 +62,8 @@
         </section>
     </main>
     <footer>
-        &copy; 2024 Simulation Project Team | Designed for innovation and impact
+        <p>&copy; 2024 Simulation of Complex Systems | Developed by Group 13: Gabriel Forsberg, Per-Ola Gradin, Atharva Khandait, Johan Lindgren, Wongsapat Tangwanidgoon, Adam Udén</p>
+        <p>&copy; Chalmers University of Technology</p>
     </footer>
 </body>
 </html>

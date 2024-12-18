@@ -1,0 +1,54 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0; /* Light grey background */
+    color: #333333; /* Dark grey text */
+}
+
+header {
+    background-color: #4CAF50; /* Green header */
+    color: #ffffff; /* White text */
+    padding: 1rem;
+    text-align: center;
+}
+
+main {
+    padding: 1rem;
+    padding-left: 15%;
+    padding-right: 15%;
+}
+
+.animation-container, .result-container, .reference-container {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+video {
+    width: 100%;
+    height: auto;
+}
+
+img {
+    width: 100%;
+    height: auto;
+}
+
+footer {
+    background-color: #4CAF50; /* Green footer */
+    color: #ffffff; /* White text */
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 0.5rem;
+}
+
+@media (min-width: 600px) {
+    video {
+        width: 640px;
+        height: 360px;
+    }
+    img {
+        width: 640px;
+        height: auto;
+    }
+}

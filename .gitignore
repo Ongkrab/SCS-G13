@@ -11,4 +11,4 @@ config.json
 **/.DS_Store
 **/output_video.webm
 **/simulation.mp4
-*.mp4
+

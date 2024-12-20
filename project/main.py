@@ -47,7 +47,6 @@ def main():
     # Assign individual variables for simulation parameters
     isAnimate = simulation["is_animate"]
     isPlotResults = simulation["is_plot_results"]
-    isRecord = simulation["is_record"]
     grid_size = tuple(simulation["grid_size"])
     num_reindeer = simulation["num_reindeer"]
     num_predators = simulation["num_predators"]
@@ -476,22 +475,6 @@ def main():
         reindeer_clusterings_coefficient,
         delimiter=",",
     )
-
-    # Save simulation video
-    if isRecord:
-        print("Saving simulation video...")
-        save_simulation_video(
-            grid_size,
-            intrusion_center,
-            intrusion_radius,
-            food_grid_list,
-            "simulation.mp4",
-            reindeers_list,
-            predators_list,
-            steps_list,
-            capture_interval=capture_interval,
-        )
-        print("Simulation video saved.")
 
     if isPlotResults:
         visualization.visualize(root_path=RESULT_PATH, folder_name=current_time)

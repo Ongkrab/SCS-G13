@@ -325,7 +325,6 @@ def average_population_dynamics(
             pio.write_html(fig, save_file_html)
     plt.show()
 
-
 def average_population_dynamics_2axis(
     df,
     group_by="intrusion_radius",
@@ -414,7 +413,6 @@ def average_population_dynamics_2axis(
             save_file_html = f"{ROOT_PATH}{image_folder_path}/average_population_prey_predator_dynamics_{group_by}.html"
             fig = mpl_to_plotly(plt.gcf())
             pio.write_html(fig, save_file_html)
-    plt.show()
 
 
 def error_bar_population_dynamics(

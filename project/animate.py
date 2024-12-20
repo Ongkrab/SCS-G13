@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
 import numpy as np
+from matplotlib.animation import FuncAnimation, FFMpegWriter
 
 
 def plot_simulation_step(
@@ -38,7 +39,7 @@ def plot_simulation_step(
                 reindeer_positions[:, 1],
                 reindeer_positions[:, 0],
                 c="blue",
-                label="Preys",
+                label="Prey",
                 alpha=reindeer_alphas[:],
             )
         if predators:
@@ -48,12 +49,12 @@ def plot_simulation_step(
                 predator_positions[:, 1],
                 predator_positions[:, 0],
                 c="red",
-                label="Predators",
+                label="Predator",
                 alpha=predator_alphas[:],
             )
 
         plt.title(f"Step {step}")
-        plt.legend()
+        plt.legend(loc="lower center")
         plt.tight_layout()
         if isAnimate:
             plt.pause(0.00001)

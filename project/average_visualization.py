@@ -4,6 +4,9 @@ from numpy import genfromtxt
 import matplotlib.pyplot as plt
 import helper
 import os
+import plotly.tools as tools
+from plotly.tools import mpl_to_plotly
+import plotly.io as pio
 
 ROOT_PATH = "./results/"
 CONFIG_PATH = "./config.json"
@@ -259,6 +262,7 @@ def average_population_dynamics(
     is_save=False,
     image_folder_path=IMAGE_FOLDER_NAME,
     intrusion_interest=INTRUSION_INTEREST,
+    export_web=False,
 ):
     # Group the data by the specified column
     grouped_data = df.groupby(group_by).agg(
@@ -313,6 +317,12 @@ def average_population_dynamics(
             save_file_name,
             dpi=600,
         )
+        if export_web:
+            save_file_html = f"{ROOT_PATH}{image_folder_path}/average_population_dynamics_{group_by}.html"
+            fig = mpl_to_plotly(plt.gcf())
+
+            # Save as an interactive HTML file
+            pio.write_html(fig, save_file_html)
     plt.show()
 
 
@@ -323,6 +333,7 @@ def average_population_dynamics_2axis(
     is_save=False,
     image_folder_path=IMAGE_FOLDER_NAME,
     intrusion_interest=INTRUSION_INTEREST,
+    export_web=False,
 ):
     # Group the data by the specified column
     grouped_data = df.groupby(group_by).agg(
@@ -399,6 +410,10 @@ def average_population_dynamics_2axis(
             save_file_name,
             dpi=600,
         )
+        if export_web:
+            save_file_html = f"{ROOT_PATH}{image_folder_path}/average_population_prey_predator_dynamics_{group_by}.html"
+            fig = mpl_to_plotly(plt.gcf())
+            pio.write_html(fig, save_file_html)
     plt.show()
 
 
@@ -529,6 +544,7 @@ def average_culling_cause_statistics(
     is_save=False,
     image_folder_path="",
     intrusion_interest=INTRUSION_INTEREST,
+    export_web=False,
 ):
     # Merge the culling statistics with the configuration data to get the intrusion radius
     # Group the data by the specified column and calculate the mean of the second column
@@ -611,6 +627,10 @@ def average_culling_cause_statistics(
             save_file_name,
             dpi=300,
         )
+        if export_web:
+            save_file_html = f"{ROOT_PATH}{image_folder_path}/average_culling_cause_statistics_{group_by}.html"
+            fig = mpl_to_plotly(plt.gcf())
+            pio.write_html(fig, save_file_html)
     plt.show()
 
 
@@ -771,7 +791,8 @@ def create_culling_drop_scatter_plot(
 if __name__ == "__main__":
     df = read_results(FOLDER_NAMES, ROOT_PATH, group_by="intrusion.radius")
     intrusion_interest = [0, 60]
-    intrusion_interest = [0, 30, 60, 90]
+    intrusion_interest = [60]
+    # intrusion_interest = [0, 30, 60, 90]
 
     # average_population_dynamics_2axis(
     #     df,
@@ -780,21 +801,25 @@ if __name__ == "__main__":
     #     only_reindeer=False,
     #     intrusion_interest=intrusion_interest,
     #     image_folder_path=IMAGE_FOLDER_NAME,
+    #     export_web=True,
     # )
 
-    average_population_dynamics(
-        df,
-        group_by="intrusion_radius",
-        is_save=True,
-        only_reindeer=True,
-        intrusion_interest=intrusion_interest,
-        image_folder_path=IMAGE_FOLDER_NAME,
-    )
+    # average_population_dynamics(
+    #     df,
+    #     group_by="intrusion_radius",
+    #     is_save=True,
+    #     only_reindeer=True,
+    #     intrusion_interest=intrusion_interest,
+    #     image_folder_path=IMAGE_FOLDER_NAME,
+    #     export_web=True,
+    # )
     # average_culling_statistics(
     #     df,
     #     group_by="intrusion_radius",
     #     is_save=True,
     #     intrusion_interest=intrusion_interest,
+    #     image_folder_path=IMAGE_FOLDER_NAME,
+
     # )  # Haven't Average Culling Statistics ye
     # average_population_dynamics(
     #     df,
@@ -815,9 +840,11 @@ if __name__ == "__main__":
     # intrusion_interest = [
     #     70,
     # ]
-    # average_culling_cause_statistics(
-    #     df,
-    #     group_by="intrusion_radius",
-    #     is_save=True,
-    #     intrusion_interest=intrusion_interest,
-    # )
+    average_culling_cause_statistics(
+        df,
+        group_by="intrusion_radius",
+        is_save=True,
+        intrusion_interest=intrusion_interest,
+        image_folder_path=IMAGE_FOLDER_NAME,
+        export_web=True,
+    )

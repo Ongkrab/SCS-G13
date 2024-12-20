@@ -191,12 +191,6 @@ def main():
     predator_death_by_starvation = [[0, 0]]
     reindeer_clusterings_coefficient = []
 
-    # Initialize lists to store simulation data for video
-    food_grid_list = []
-    reindeers_list = []
-    predators_list = []
-    steps_list = []
-
     print("Initialized Complete.")
     startTime = time.time()
 
@@ -388,12 +382,6 @@ def main():
             isAnimate=isAnimate,
             capture_interval=capture_interval,
         )
-
-        # Store data for video
-        food_grid_list.append(np.copy(food_grid))
-        reindeers_list.append(reindeers[:])
-        predators_list.append(predators[:])
-        steps_list.append(step)
 
         # Stop if no reindeer are left
         if len(reindeers) == 0:

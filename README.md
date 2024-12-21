@@ -51,6 +51,8 @@ Main Library list
 - numpy
 - matplotlib
 - pynput
+- ProcessPoolExecutor
+- pandas
 
 ## Execution by command line
 MAC

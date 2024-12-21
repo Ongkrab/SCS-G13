@@ -5,7 +5,6 @@ from matplotlib.animation import FuncAnimation, FFMpegWriter
 
 
 def plot_simulation_step(
-    figures,
     grid_size,
     intrusion_center,
     intrusion_radius,
@@ -17,10 +16,10 @@ def plot_simulation_step(
     isAnimate=True,
     capture_interval=10000,
 ):
-
+    plt.figure(figsize=(8, 4))
     isCapture = step % capture_interval == 0
     if isAnimate == True or isCapture == True:
-        figures.imshow(
+        plt.imshow(
             food_grid,
             cmap="Greens",
             extent=(0, grid_size[1], 0, grid_size[0]),
@@ -32,11 +31,11 @@ def plot_simulation_step(
                 color="grey",
                 alpha=1,
             )
-            figures.gca().add_artist(circle)
+            plt.gca().add_artist(circle)
         if reindeers:
             reindeer_positions = np.array([r.position for r in reindeers])
             reindeer_alphas = np.array([r.get_alpha() for r in reindeers])
-            figures.scatter(
+            plt.scatter(
                 reindeer_positions[:, 1],
                 reindeer_positions[:, 0],
                 c="blue",
@@ -46,7 +45,7 @@ def plot_simulation_step(
         if predators:
             predator_positions = np.array([p.position for p in predators])
             predator_alphas = np.array([p.get_alpha() for p in predators])
-            figures.scatter(
+            plt.scatter(
                 predator_positions[:, 1],
                 predator_positions[:, 0],
                 c="red",
@@ -54,12 +53,12 @@ def plot_simulation_step(
                 alpha=predator_alphas[:],
             )
 
-        figures.title(f"Step {step}")
-        figures.legend(loc="lower center")
-        figures.tight_layout()
+        plt.title(f"Step {step}")
+        plt.legend(loc="lower center")
+        plt.tight_layout()
         if isAnimate:
-            figures.pause(0.00001)
+            plt.pause(0.00001)
         if isCapture:
-            figures.savefig(result_image_path + f"step_{step}.svg")
-            figures.close()
-        figures.clf()
+            plt.savefig(result_image_path + f"step_{step}.png")
+            plt.close()
+        plt.clf()

@@ -6,8 +6,9 @@ from helper import *
 import pandas as pd
 
 ROOT_PATH = "./results/"
-
-FOLDER_NAME_DEFAULT = "20241215-135421"
+SUB_FOLDER = "FOOD_REGENERATION_RATE_0.0025INTRUSION_RADIUS_60/"
+SUBSUB_FOLDER = "SEED_001/"
+FOLDER_NAME_DEFAULT = ROOT_PATH + SUB_FOLDER + SUBSUB_FOLDER
 IMAGE_FOLDER_NAME = "images"
 
 
@@ -291,14 +292,16 @@ def reindeer_clustering_coefficient_plot(
     plt.show()
 
 
-def visualize(root_path=ROOT_PATH, folder_name=FOLDER_NAME_DEFAULT):
-    result_folder_path = root_path + folder_name + "/"
-    config_path = result_folder_path + "config.json"
-    image_folder_path = result_folder_path + IMAGE_FOLDER_NAME + "/"
+def visualize(path=FOLDER_NAME_DEFAULT):
 
+    config_path = path + "config.json"
+    image_folder_path = path + IMAGE_FOLDER_NAME + "/"
+    result_folder_path = path
     if not os.path.exists(image_folder_path):
         os.makedirs(image_folder_path)
+
     print("Visualizing results from folder: " + result_folder_path)
+
     reindeer_population = genfromtxt(
         result_folder_path + "reindeer_population.csv", delimiter=","
     )

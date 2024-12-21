@@ -1,17 +1,14 @@
 import numpy as np
 import time
-import matplotlib.pyplot as plt
-from predator import Predator
-from reindeer import Reindeer
-from matplotlib.patches import Circle
 import argparse
-
+from concurrent.futures import ProcessPoolExecutor
 
 # from matplotlib.colors import ListedColormap, BoundaryNorm
 from helper import *
 from animate import *
 from simulation import *
 from pynput import keyboard
+import os
 
 stop_loop = False
 
@@ -30,6 +27,28 @@ def on_press(key):
         return False  # Stops the listener
 
 
+# Initialize the simulation
+def run_simulation(
+    seed_number, config, isAnimate, capture_interval, max_steps, isPlotResults
+):
+    simulation = Simulation(
+        config=config,
+        seed_number=seed_number,
+        isAnimate=isAnimate,
+        capture_interval=capture_interval,
+        result_path=RESULT_PATH,
+        is_batch=IS_BATCH,
+        isPlotResults=isPlotResults,
+        max_steps=max_steps,
+    )
+    simulation.simulate()
+    print("xxx")
+    simulation.save_result()
+    current_time = time.strftime("%Y%m%d-%H%M%S")
+    print("Finish time: ", current_time)
+    print(f"Simulation with seed {seed_number} is done.")
+
+
 def main():
     # Load the configuration
     config = load_config(CONFIG_PATH)
@@ -43,6 +62,12 @@ def main():
     capture_interval = simulation["capture_interval"]
     seed_list = simulation["seed_list"]
     max_steps = simulation["max_steps"]
+    is_batch = simulation["is_batch"]
+
+    if is_batch:
+        IS_BATCH = True
+    else:
+        IS_BATCH = False
 
     #############################
     ## End of configuration
@@ -68,21 +93,30 @@ def main():
             seed_list.append(np.random.seed())
         print("Running with Batch mode")
 
-    # Initialize the simulation
-    for seed_number in seed_list:
-        simulation = Simulation(
-            config=config,
-            seed_number=seed_number,
-            isAnimate=isAnimate,
-            capture_interval=capture_interval,
-            result_path=RESULT_PATH,
-            is_batch=IS_BATCH,
-            isPlotResults=isPlotResults,
-            max_steps=max_steps,
+    num_parallel = simulation["num_parallel"]
+    if num_parallel == 0:
+        num_cores = os.cpu_count()
+        num_parallel = max(1, int(num_cores * 0.4))
+        print(
+            f"No configuration for number of cores. Using 60% of available cores: {num_parallel}"
         )
-
-        simulation.simulate()
-        simulation.save_result()
+    if IS_BATCH:
+        with ProcessPoolExecutor(max_workers=num_parallel) as executor:
+            list(
+                executor.map(
+                    run_simulation,
+                    seed_list,
+                    [config] * len(seed_list),
+                    [isAnimate] * len(seed_list),
+                    [capture_interval] * len(seed_list),
+                    [max_steps] * len(seed_list),
+                    [isPlotResults] * len(seed_list),
+                )
+            )
+    else:
+        run_simulation(
+            seed_list[0], config, isAnimate, capture_interval, max_steps, isPlotResults
+        )
 
 
 if __name__ == "__main__":
@@ -106,7 +140,7 @@ if __name__ == "__main__":
         type=str,
         required=False,
         help="Path to store result file",
-        default="True",
+        default="False",
     )
     args = parser.parse_args()
     CONFIG_PATH = args.config

@@ -1,19 +1,20 @@
 {
   "simulation": {
-    "max_steps": 10000,
+    "max_steps": 1000,
     "is_coeffient_calculate": false,
     "is_animate": false,
     "is_plot_results": false,
     "capture_interval": 100000,
-    "set_seed": false,
     "seed_number": 5,
-    "seed_list": [1, 2]
+    "seed_list": [1, 2, 3, 5,7,9],
+    "num_parallel": 3,
+    "is_batch": true
   },
   "environment": {    
     "grid_size": [100, 300],
     "num_reindeer": 150,
     "num_predators": 5,
-    "food_regeneration_rate": 0.0035,
+    "food_regeneration_rate": 0.0025,
     "reproduction_interval": 40,
     "culling_rate": 0.12,
     "culling_threshold": 100,

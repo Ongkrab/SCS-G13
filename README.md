@@ -65,7 +65,7 @@ WINDOWS - in PowerShell
 ./reindeer-project --config <CONFIG_JSON_PATH> -- result <RESULT_PATH>
 ```
 Example
-`./dist/reindeer-project --config ./config.json --result ./results/`
+`./dist/reindeer-project --config ./config.json --result ./results/ --batch False`
 
 
 

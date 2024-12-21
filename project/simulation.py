@@ -34,7 +34,7 @@ class Simulation:
         self.initialize()
 
     def initialize(self):
-        current_time = time.strftime("%Y%m%d-%H%M%S")
+        self.current_time = time.strftime("%Y%m%d-%H%M%S")
 
         print("Initializing simulation...")
         environment = self.config["environment"]
@@ -219,19 +219,19 @@ class Simulation:
         #################################
         startTime = time.time()
         fig = None
-        if self.isAnimate:
-            fig = plt.figure(figsize=(8, 4))
+        # if self.isAnimate:
+        #     fig = plt.figure(figsize=(8, 4))
 
         # Simulation loop
         for step in range(self.max_steps):
             print(
-                f"Food Regenerate = {self.food_regeneration_rate} and intrusion radius = {self.intrusion_radius}: Step {step} out of {self.max_steps}",
+                f"Food Regenerate = {self.food_regeneration_rate} and intrusion radius = {self.intrusion_radius}, seed {self.seed_number}: Step {step} out of {self.max_steps}",
                 end="\r",
             )
-            if self.isAnimate:
-                if stop_loop:  # Check the flag
-                    print("Loop exited.")
-                    break
+            # if self.isAnimate:
+            #     if stop_loop:  # Check the flag
+            #         print("Loop exited.")
+            #         break
 
             # Update food grid (simple logistic regeneration)
             food_grid += food_regeneration_rate * (1 - food_grid)
@@ -410,10 +410,8 @@ class Simulation:
                 self.reindeer_clusterings_coefficient.append(clustering)
 
             if not self.is_batch:
-
                 # Plot the environment
                 plot_simulation_step(
-                    figures=fig,
                     grid_size=grid_size,
                     intrusion_center=intrusion_center,
                     intrusion_radius=intrusion_radius,
@@ -521,6 +519,4 @@ class Simulation:
         )
 
         if self.isPlotResults:
-            visualization.visualize(
-                root_path=self.result_path, folder_name=self.current_time
-            )
+            visualization.visualize(path=self.result_folder_path)

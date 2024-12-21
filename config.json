@@ -1,6 +1,6 @@
 {
   "simulation": {
-    "max_steps": 1000,
+    "max_steps": 10000,
     "is_coeffient_calculate": false,
     "is_animate": false,
     "is_plot_results": false,

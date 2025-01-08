@@ -181,7 +181,8 @@ def average_population_dynamics_2axis(
 
 
 def create_culling_drop_scatter_plot(
-    df_culling,
+    df_culling1,
+    df_culling2,
     image_folder_path=IMAGE_FOLDER_NAME,
     intrusion_interest=INTRUSION_INTEREST,
 ):
@@ -195,48 +196,19 @@ def create_culling_drop_scatter_plot(
     intrusion_radii = []
 
     total_area = 100 * 300  # Total area of the simulation
-    print(df_culling)
+    print(df_culling1)
+    print("-----Food Regeneration 0.0025-----")
+    print(df_culling2)
+    print("-----Food Regeneration 0.0035-----")
 
-    df_culling["decresed_area_percent"] = (
-        0.5 * np.pi * df_culling["radius"].astype(int) ** 2 / total_area
+    df_culling1["decresed_area_percent"] = (
+        0.5 * np.pi * df_culling1["radius"].astype(int) ** 2 / total_area
     ) * 100
-    culling_drop_percentages = df_culling["diff_percentage"].abs().tolist()
-    decreased_area_percentages = df_culling["decresed_area_percent"].tolist()
-    intrusion_radii = df_culling["radius"].astype(str).tolist()
+    culling_drop_percentages = df_culling1["diff_percentage"].abs().tolist()
+    decreased_area_percentages = df_culling1["decresed_area_percent"].tolist()
+    intrusion_radii = df_culling1["radius"].astype(str).tolist()
 
-    plt.figure(figsize=(8, 4))
-
-    plt.bar(
-        intrusion_radii,
-        culling_drop_percentages,
-        color="blue",
-        width=0.5,
-        label="Culling Drop (%)",
-    )
-    plt.scatter(
-        intrusion_radii,
-        decreased_area_percentages,
-        color="orange",
-        label="Decreased Area (%)",
-    )
-
-    plt.xlabel("Intrusion Radius")
-    plt.ylabel("Decreased Percentage (%)")
-    plt.title("Culling Drop and Decreased Area vs Intrusion Radius")
-    plt.grid(axis="y", linestyle="--", alpha=0.6)
-    plt.xticks(intrusion_radii)
-    plt.axhline(0, color="grey", linestyle="--", linewidth=1, alpha=0.8)
-    plt.legend()
-    plt.tight_layout()
-
-    # plt.savefig(image_folder_path + "culling_drop_vs_intrusion_radius.svg")
-    plt.show()
-
-    # culling_drop_percentages = df_culling["average"].tolist()
-    # culling_errors = df_culling["std"].tolist()
-    # fig, ax1 = plt.subplots(figsize=(8, 4))
-
-    # ax2 = ax1.twinx()
+    # plt.figure(figsize=(8, 4))
 
     # plt.bar(
     #     intrusion_radii,
@@ -244,13 +216,6 @@ def create_culling_drop_scatter_plot(
     #     color="blue",
     #     width=0.5,
     #     label="Culling Drop (%)",
-    # )
-    # plt.errorbar(
-    #     intrusion_radii,
-    #     culling_drop_percentages,
-    #     culling_errors,
-    #     color="black",
-    #     fmt="o",
     # )
     # plt.scatter(
     #     intrusion_radii,
@@ -267,6 +232,67 @@ def create_culling_drop_scatter_plot(
     # plt.axhline(0, color="grey", linestyle="--", linewidth=1, alpha=0.8)
     # plt.legend()
     # plt.tight_layout()
+
+    # # plt.savefig(image_folder_path + "culling_drop_vs_intrusion_radius.svg")
+    # plt.show()
+
+    culling_drop_percentages1 = df_culling1["average"].tolist()
+    culling_errors1 = df_culling1["std"].tolist()
+
+    culling_drop_percentages2 = df_culling2["average"].tolist()
+    culling_errors2 = df_culling2["std"].tolist()
+    fig, ax1 = plt.subplots(figsize=(8, 4))
+
+    ax2 = ax1.twinx()
+
+    # ax1.bar(
+    #     intrusion_radii,
+    #     culling_drop_percentages,
+    #     color="blue",
+    #     width=0.3,
+    #     label="Culling Drop (%)",
+    # )
+    ax1.errorbar(
+        intrusion_radii,
+        culling_drop_percentages1,
+        culling_errors1,
+        capsize=4,
+        color="grey",
+        label="Culling Drop (%) - Food Regeneration 0.0025",
+        # fmt="o",
+    )
+    ax1.errorbar(
+        intrusion_radii,
+        culling_drop_percentages2,
+        culling_errors2,
+        capsize=4,
+        color="blue",
+        label="Culling Drop (%) - Food Regeneration 0.0035",
+        # fmt="o",
+    )
+    ax2.scatter(
+        intrusion_radii,
+        decreased_area_percentages,
+        color="orange",
+        label="Decreased Area (%)",
+    )
+
+    ax1.legend(loc="upper right", fontsize="small")
+    ax2.legend(loc="upper left", fontsize="small")
+    # ax1.set_yscale("log")
+    # ax2.set_yscale("log")
+    ax1.set_xlabel("Intrusion Radius")
+    ax1.set_ylabel("Average Culling Drop")
+    ax2.set_ylabel("Decreased Percentage (%)")
+    ax2.set_ylim(0, 80)
+
+    plt.grid(axis="y", linestyle="--", alpha=0.6)
+    plt.xticks(intrusion_radii)
+    plt.axhline(0, color="grey", linestyle="--", linewidth=1, alpha=0.8)
+    plt.title("Culling Drop and Decreased Area vs Intrusion Radius")
+
+    plt.tight_layout()
+    plt.show()
 
     # # plt.savefig(image_folder_path + "culling_drop_vs_intrusion_radius.svg")
     # plt.show()
@@ -365,5 +391,7 @@ if __name__ == "__main__":
     #     df_reindeer, df_predator, intrusion_interest=INTRUSION_INTEREST
     # )
 
-    df_culling = read_culling(CULLING_RATE_0_0025)
-    create_culling_drop_scatter_plot(df_culling)
+    df_culling_0025 = read_culling(CULLING_RATE_0_0025)
+    FOOD_REGENERATION_PATH = "FOOD_REGENERATION_RATE_0_35"
+    df_culling_0035 = read_culling(CULLING_RATE_0_0035)
+    create_culling_drop_scatter_plot(df_culling_0025, df_culling_0035)

@@ -2088,3 +2088,83 @@ FOOD_REGENERATION_RATE_0_0035 = [
     FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_80,
     FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_90,
 ]
+
+
+PREDATOR_POPULATION_0_0025 = [
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_0_average_predator_population.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_10_average_predator_population.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_20_average_predator_population.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_30_average_predator_population.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_40_average_predator_population.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_50_average_predator_population.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_60_average_predator_population.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_70_average_predator_population.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_80_average_predator_population.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_90_average_predator_population.csv",
+]
+
+REINDEER_POPULATION_0_0025 = [
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_0_average_reindeer_population.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_10_average_reindeer_population.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_20_average_reindeer_population.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_30_average_reindeer_population.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_40_average_reindeer_population.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_50_average_reindeer_population.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_60_average_reindeer_population.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_70_average_reindeer_population.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_80_average_reindeer_population.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_90_average_reindeer_population.csv",
+]
+
+CULLING_RATE_0_0025 = [
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_0_average_culling_statistics.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_10_average_culling_statistics.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_20_average_culling_statistics.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_30_average_culling_statistics.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_40_average_culling_statistics.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_50_average_culling_statistics.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_60_average_culling_statistics.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_70_average_culling_statistics.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_80_average_culling_statistics.csv",
+    "FOOD_REGENERATION_RATE_0_0025INTRUSION_RADIUS_90_average_culling_statistics.csv",
+]
+
+
+PREDATOR_POPULATION_0_0035 = [
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_0_average_predator_population.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_10_average_predator_population.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_20_average_predator_population.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_30_average_predator_population.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_40_average_predator_population.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_50_average_predator_population.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_60_average_predator_population.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_70_average_predator_population.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_80_average_predator_population.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_90_average_predator_population.csv",
+]
+
+REINDEER_POPULATION_0_0035 = [
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_0_average_reindeer_population.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_10_average_reindeer_population.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_20_average_reindeer_population.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_30_average_reindeer_population.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_40_average_reindeer_population.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_50_average_reindeer_population.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_60_average_reindeer_population.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_70_average_reindeer_population.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_80_average_reindeer_population.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_90_average_reindeer_population.csv",
+]
+
+CULLING_RATE_0_0035 = [
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_0_average_culling_statistics.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_10_average_culling_statistics.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_20_average_culling_statistics.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_30_average_culling_statistics.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_40_average_culling_statistics.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_50_average_culling_statistics.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_60_average_culling_statistics.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_70_average_culling_statistics.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_80_average_culling_statistics.csv",
+    "FOOD_REGENERATION_RATE_0_0035INTRUSION_RADIUS_90_average_culling_statistics.csv",
+]

@@ -15,7 +15,8 @@ INTRUSION_INTEREST = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
 
 FOOD_REGENERATION_PATH = "FOOD_REGENERATION_RATE_0_25"
 IMAGE_FOLDER_NAME = "./merges/images"
-FIGSIZE = (8, 4)
+FIGSIZE = (6, 3)
+IS_EXPORT_WEB = True
 image_folder_path = IMAGE_FOLDER_NAME
 
 
@@ -27,6 +28,21 @@ def read_population(result_list):
 
         column_name = result_file.split("RADIUS_")[1].split("_")[0]
         result[column_name] = df["average"]
+    return result
+
+
+def read_single_population(result_list, seed):
+    result = pd.DataFrame()
+    for result_file in result_list:
+        file_path = ROOT_PATH + FOOD_REGENERATION_PATH + "/" + result_file
+        df = pd.read_csv(file_path)
+
+        column_name = result_file.split("RADIUS_")[1].split("_")[0]
+        print(df.columns)
+        if seed in df.columns:
+            result[column_name] = df[seed]
+        # result[column_name] = df["average"]
+    print(result)
     return result
 
 
@@ -120,13 +136,180 @@ def read_culling(result_list):
     return result
 
 
+def single_population_dynamics_2axis(
+    df_reindeer,
+    df_predator,
+    image_folder_path=IMAGE_FOLDER_NAME,
+    intrusion_interest=INTRUSION_INTEREST,
+):
+    save_file_name = (
+        f"{ROOT_PATH}{image_folder_path}/fig2_100_single_pop_comparison.svg"
+    )
+    # Plot the population dynamics
+    fig, ax1 = plt.subplots(figsize=FIGSIZE)
+
+    ax2 = ax1.twinx()
+
+    colors = [
+        "tab:blue",
+        "tab:red",
+        "tab:green",
+        "tab:orange",
+        "tab:purple",
+        "tab:brown",
+    ]
+
+    i = 0
+
+    for intrusion_radius in intrusion_interest:
+        column_name = f"{intrusion_radius}"
+        ax1.plot(
+            df_reindeer[column_name],
+            # label=f"Prey Population - Intrusion Radius: {intrusion_radius}",
+            label=f"Prey - Radius: {intrusion_radius}",
+            color=colors[i],
+        )
+
+        ax2.plot(
+            df_predator[column_name],
+            label=f"Predator - Radius: {intrusion_radius}",
+            color=colors[i + 1],
+        )
+        i += 2
+
+    max_steps = df_reindeer.shape[0]
+
+    ax1.set_ylim(0, 350)
+    ax2.set_ylim(0, 50)
+    ax1.set_xlim(0, 10000)
+
+    ax1.set_xlabel("Time Step")
+    ax1.set_ylabel("Reindeer Population", color="tab:blue")
+    ax2.set_ylabel("Predator Population", color="tab:red")
+    ax2.set_ylabel("Predator Population")
+
+    box_to_anchor = (1.1, 1.05)
+    # ax1.legend(loc="lower left", bbox_to_anchor=box_to_anchor)
+    # ax2.legend(loc="lower right", bbox_to_anchor=box_to_anchor)
+    ax1.legend(loc="upper left", fontsize="medium")
+    ax2.legend(loc="upper right", fontsize="medium")
+    # plt.legend(loc="upper right", fontsize="medium")
+
+    plt.axvline(
+        x=max_steps / 2,
+        color="grey",
+        linestyle="--",
+        linewidth=2,
+        label="Intrusion added",
+    )
+
+    # plt.xlabel("Time Step", fontsize="large")
+    plt.title("Population Dynamics for Intrusion Radius: 60")
+    plt.tight_layout()
+    plt.savefig(
+        save_file_name,
+        dpi=600,
+    )
+
+    if IS_EXPORT_WEB:
+        save_file_html = f"{save_file_name}.html"
+
+        fig = mpl_to_plotly(plt.gcf())
+        pio.write_html(fig, save_file_html)
+
+    plt.show()
+
+
+def single_population_dynamics_2axis_006(
+    df_reindeer,
+    df_predator,
+    image_folder_path=IMAGE_FOLDER_NAME,
+    intrusion_interest=INTRUSION_INTEREST,
+):
+    save_file_name = (
+        f"{ROOT_PATH}{image_folder_path}/fig7_100_006_single_pop_comparison.svg"
+    )
+    # Plot the population dynamics
+    fig, ax1 = plt.subplots(figsize=FIGSIZE)
+
+    ax2 = ax1.twinx()
+
+    colors = [
+        "tab:blue",
+        "tab:red",
+        "tab:green",
+        "tab:orange",
+        "tab:purple",
+        "tab:brown",
+    ]
+
+    i = 0
+
+    for intrusion_radius in intrusion_interest:
+        column_name = f"{intrusion_radius}"
+        ax1.plot(
+            df_reindeer[column_name],
+            # label=f"Prey Population - Intrusion Radius: {intrusion_radius}",
+            label=f"Prey - Radius: {intrusion_radius}",
+            color=colors[i],
+        )
+
+        ax2.plot(
+            df_predator[column_name],
+            label=f"Predator - Radius: {intrusion_radius}",
+            color=colors[i + 1],
+        )
+        i += 2
+
+    max_steps = df_reindeer.shape[0]
+
+    ax1.set_ylim(0, 1000)
+    ax2.set_ylim(0, 100)
+    ax1.set_xlim(0, 10000)
+
+    ax1.set_xlabel("Time Step")
+    ax1.set_ylabel("Reindeer Population", color="tab:blue")
+    ax2.set_ylabel("Predator Population", color="tab:red")
+    ax2.set_ylabel("Predator Population")
+
+    box_to_anchor = (1.1, 1.05)
+    # ax1.legend(loc="lower left", bbox_to_anchor=box_to_anchor)
+    # ax2.legend(loc="lower right", bbox_to_anchor=box_to_anchor)
+    ax1.legend(loc="upper left", fontsize="medium")
+    ax2.legend(loc="upper right", fontsize="medium")
+    # plt.legend(loc="upper right", fontsize="medium")
+
+    plt.axvline(
+        x=max_steps / 2,
+        color="grey",
+        linestyle="--",
+        linewidth=2,
+        label="Intrusion added",
+    )
+
+    # plt.xlabel("Time Step", fontsize="large")
+    plt.title("Unconstraint Population Dynamics")
+    plt.tight_layout()
+    plt.savefig(
+        save_file_name,
+        dpi=600,
+    )
+    if IS_EXPORT_WEB:
+        save_file_html = f"{save_file_name}.html"
+
+        fig = mpl_to_plotly(plt.gcf())
+        pio.write_html(fig, save_file_html)
+
+    plt.show()
+
+
 def average_population_dynamics(
     df,
     image_folder_path=IMAGE_FOLDER_NAME,
     intrusion_interest=INTRUSION_INTEREST,
 ):
     save_file_name = (
-        f"{ROOT_PATH}{image_folder_path}/fig3_100_average_pop_comparison.svg"
+        f"{ROOT_PATH}{image_folder_path}/fig4_100_average_pop_comparison.svg"
     )
 
     # Plot the population dynamics
@@ -135,7 +318,7 @@ def average_population_dynamics(
     for intrusion_radius in intrusion_interest:
         plt.plot(
             df[f"{intrusion_radius}"],
-            label=f"Prey Population - Intrusion Radius: {intrusion_radius}",
+            label=f"Prey - Radius: {intrusion_radius}",
         )
 
     max_steps = df.shape[0]
@@ -149,7 +332,7 @@ def average_population_dynamics(
 
     plt.xlabel("Time Step")
     plt.ylabel("Population")
-    plt.title("Average Population Dynamics over 100 simulation pairs")
+    plt.title("Average Population Dynamics")
     plt.xlim(0, 10000)
 
     plt.legend()
@@ -159,13 +342,12 @@ def average_population_dynamics(
         save_file_name,
         dpi=600,
     )
-    # if export_web:
-    #     save_file_html = f"{ROOT_PATH}{image_folder_path}/average_population_dynamics_{group_by}.html"
-    #     fig = mpl_to_plotly(plt.gcf())
+    if IS_EXPORT_WEB:
+        save_file_html = f"{save_file_name}.html"
 
-    #     # Save as an interactive HTML file
-    #     pio.write_html(fig, save_file_html)
-    plt.savefig(save_file_name)
+        fig = mpl_to_plotly(plt.gcf())
+        pio.write_html(fig, save_file_html)
+
     plt.show()
 
 
@@ -177,7 +359,7 @@ def average_population_dynamics_2axis(
     export_web=False,
 ):
     save_file_name = (
-        f"{ROOT_PATH}{image_folder_path}/fig4_100_average_population_60.svg"
+        f"{ROOT_PATH}{image_folder_path}/fig3_100_average_population_60.svg"
     )
 
     # Plot the population dynamics
@@ -201,13 +383,13 @@ def average_population_dynamics_2axis(
         ax1.plot(
             df_reindeer[column_name],
             # label=f"Prey Population - Intrusion Radius: {intrusion_radius}",
-            label=f"Prey Population - Intrusion Radius: {intrusion_radius}",
+            label=f"Prey - Radius: {intrusion_radius}",
             color=colors[i],
         )
 
         ax2.plot(
             df_predator[column_name],
-            label=f"Predator Population - Intrusion Radius: {intrusion_radius}",
+            label=f"Predator - Radius: {intrusion_radius}",
             color=colors[i + 1],
         )
         i += 2
@@ -240,11 +422,18 @@ def average_population_dynamics_2axis(
     # plt.xlabel("Time Step", fontsize="large")
     plt.title("Average Population Dynamics for Intrusion Radius: 60")
     plt.tight_layout()
+
     plt.savefig(
         save_file_name,
         dpi=600,
     )
-    plt.savefig(save_file_name)
+
+    if IS_EXPORT_WEB:
+        save_file_html = f"{save_file_name}.html"
+
+        fig = mpl_to_plotly(plt.gcf())
+        pio.write_html(fig, save_file_html)
+
     plt.show()
 
 
@@ -283,19 +472,19 @@ def create_culling_drop_scatter_plot(
     intrusion_radii = intrusion_radii[1:]
     plt.figure(figsize=FIGSIZE)
     plt.bar(
-        df_culling1["radius"].tolist()[1:],
-        df_culling1["diff_percentage"].abs().tolist()[1:],
+        df_culling2["radius"].tolist()[1:],
+        df_culling2["diff_percentage"].abs().tolist()[1:],
         color="red",
         width=0.5,
         label="Culling Drop (%)",
     )
     plt.errorbar(
-        df_culling1["radius"].tolist()[1:],
-        df_culling1["diff_percentage"].abs().tolist()[1:],
-        df_culling1["diff_std_percentage"].tolist()[1:],
+        df_culling2["radius"].tolist()[1:],
+        df_culling2["diff_percentage"].abs().tolist()[1:],
+        df_culling2["diff_std_percentage"].tolist()[1:],
         capsize=4,
         color="orange",
-        label="Culling Drop STD (%) - Food Regeneration 0.0025",
+        label="Culling Drop STD (%)",
         # fmt="o",
     )
     plt.scatter(
@@ -307,16 +496,24 @@ def create_culling_drop_scatter_plot(
 
     plt.xlabel("Intrusion Radius")
     plt.ylabel("Decreased Percentage (%)")
-    plt.title(
-        "Culling Drop and Decreased Area vs Intrusion Radius - Food Regeneration 0.0025"
-    )
+    plt.title("Culling Drop and Decreased Area vs Intrusion Radius")
     plt.grid(axis="y", linestyle="--", alpha=0.6)
     plt.xticks(intrusion_radii)
     plt.axhline(0, color="grey", linestyle="--", linewidth=1, alpha=0.8)
     plt.legend()
     plt.tight_layout()
 
-    plt.savefig(save_file_name)
+    plt.savefig(
+        save_file_name,
+        dpi=600,
+    )
+
+    if IS_EXPORT_WEB:
+        save_file_html = f"{save_file_name}.html"
+
+        fig = mpl_to_plotly(plt.gcf())
+        pio.write_html(fig, save_file_html)
+
     plt.show()
 
     # fig, ax1 = plt.subplots(figsize=FIGSIZE)
@@ -410,7 +607,17 @@ def create_culling_drop_scatter_plot(
     plt.title("Culling Drop and Decreased Area vs Intrusion Radius")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(save_file_name)
+    plt.savefig(
+        save_file_name,
+        dpi=600,
+    )
+
+    if IS_EXPORT_WEB:
+        save_file_html = f"{save_file_name}.html"
+
+        fig = mpl_to_plotly(plt.gcf())
+        pio.write_html(fig, save_file_html)
+
     plt.show()
 
 
@@ -418,10 +625,21 @@ if __name__ == "__main__":
     # Read the data from the specified folder
     # result_list = REINDEER_POPULATION_0_0025
     # INTRUSION_INTEREST = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
-    INTRUSION_INTEREST = [0, 30, 60, 90]
 
     df_reindeer = read_population(REINDEER_POPULATION_0_0025)
     df_predator = read_population(PREDATOR_POPULATION_0_0025)
+    df_single_reindeer = read_single_population(REINDEER_POPULATION_0_0025, "SEED_113")
+    df_single_predator = read_single_population(PREDATOR_POPULATION_0_0025, "SEED_113")
+
+    INTRUSION_INTEREST = [0, 60]
+    single_population_dynamics_2axis(
+        df_single_reindeer,
+        df_single_predator,
+        intrusion_interest=INTRUSION_INTEREST,
+        image_folder_path=IMAGE_FOLDER_NAME,
+    )
+
+    INTRUSION_INTEREST = [0, 30, 60, 90]
     average_population_dynamics(
         df_reindeer,
         intrusion_interest=INTRUSION_INTEREST,
@@ -441,4 +659,16 @@ if __name__ == "__main__":
     df_culling_0035 = read_culling(CULLING_RATE_0_0035)
     create_culling_drop_scatter_plot(
         df_culling_0025, df_culling_0035, image_folder_path=IMAGE_FOLDER_NAME
+    )
+
+    FOOD_REGENERATION_PATH = "CULLING_006"
+    df_single_reindeer = read_single_population(REINDEER_POPULATION_0_0025, "SEED_005")
+    df_single_predator = read_single_population(PREDATOR_POPULATION_0_0025, "SEED_005")
+
+    INTRUSION_INTEREST = [0, 60]
+    single_population_dynamics_2axis_006(
+        df_single_reindeer,
+        df_single_predator,
+        intrusion_interest=INTRUSION_INTEREST,
+        image_folder_path=IMAGE_FOLDER_NAME,
     )

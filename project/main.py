@@ -42,7 +42,6 @@ def run_simulation(
         max_steps=max_steps,
     )
     simulation.simulate()
-    print("xxx")
     simulation.save_result()
     current_time = time.strftime("%Y%m%d-%H%M%S")
     print("Finish time: ", current_time)
@@ -120,6 +119,7 @@ def main():
 
 
 if __name__ == "__main__":
+    start_time_batch = time.time()
     parser = argparse.ArgumentParser(description="Run script with a config file.")
     parser.add_argument(
         "--config",
@@ -163,3 +163,9 @@ if __name__ == "__main__":
     print(f"Result path: {RESULT_PATH}")
     print("Starting simulation...")
     main()
+
+    end_time_batch = time.time()
+    diff_time = end_time_batch - start_time_batch
+    print(
+        f"Total time: {diff_time} seconds: or {diff_time/60} minutes : {diff_time/3600} hours"
+    )

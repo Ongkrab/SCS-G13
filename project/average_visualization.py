@@ -325,6 +325,7 @@ def average_population_dynamics(
             pio.write_html(fig, save_file_html)
     plt.show()
 
+
 def average_population_dynamics_2axis(
     df,
     group_by="intrusion_radius",

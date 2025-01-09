@@ -224,10 +224,17 @@ class Simulation:
 
         # Simulation loop
         for step in range(self.max_steps):
-            print(
-                f"Food Regenerate = {self.food_regeneration_rate} and intrusion radius = {self.intrusion_radius}, seed {self.seed_number}: Step {step} out of {self.max_steps}",
-                end="\r",
-            )
+            if self.is_batch:
+                if step % 100 == 0:
+                    print(
+                        f"Food Regenerate = {self.food_regeneration_rate} and intrusion radius = {self.intrusion_radius}, seed {self.seed_number}: Step {step} out of {self.max_steps}",
+                        end="\r",
+                    )
+            else:
+                print(
+                    f"Food Regenerate = {self.food_regeneration_rate} and intrusion radius = {self.intrusion_radius}, seed {self.seed_number}: Step {step} out of {self.max_steps}",
+                    end="\r",
+                )
             # if self.isAnimate:
             #     if stop_loop:  # Check the flag
             #         print("Loop exited.")

@@ -28,29 +28,88 @@ def read_population(result_list):
     return result
 
 
+def find_difference_based_on_radius(df_culling):
+    df_based = df_culling.iloc[0]
+    result_temp = pd.DataFrame(columns=["radius", "average", "std"])
+    based_average = 0
+    temp = []
+    for column in df_based.index:
+
+        if column != "radius":
+            temp.append(df_based[column])
+
+    based_average = np.average(temp)
+
+    for index, row in df_culling.iterrows():
+        new_row = row.astype(float) - df_based.astype(float)
+        new_row["radius"] = row["radius"]
+        temp_difference = []
+        for col in df_culling.columns:
+            if col != "radius":
+                new_row[col] = row[col] - df_based[col]
+                temp_difference.append(row[col] - df_based[col])
+        print(len(temp_difference))
+        average = np.average(temp_difference)
+        std = np.std(temp_difference)
+        min = np.min(temp_difference)
+        max = np.max(temp_difference)
+        average_percentage = (average / based_average) * 100
+        new_row_df = {
+            "radius": row["radius"],
+            "average": average,
+            "average_percentage": average_percentage,
+            "std": std,
+            "min": min,
+            "max": max,
+        }
+        result_temp = result_temp._append(new_row_df, ignore_index=True)
+
+    print(result_temp)
+
+    return result_temp
+
+
 def read_culling(result_list):
 
     result = pd.DataFrame(columns=["radius", "average", "std"])
+    df_sum_5000 = pd.DataFrame()
     for result_file in result_list:
         file_path = ROOT_PATH + FOOD_REGENERATION_PATH + "/" + result_file
         df = pd.read_csv(file_path)
 
-        column_name = result_file.split("RADIUS_")[1].split("_")[0]
+        radius = result_file.split("RADIUS_")[1].split("_")[0]
         total_row = df.shape[0]
         start_row = round(total_row / 2)
         total_culling_5000 = []
+        df_sum_5000_temp = {}
         for seed_column in df.columns:
             if seed_column.startswith("SEED"):
                 culling_5000 = np.sum(df[seed_column][start_row:])
                 total_culling_5000.append(culling_5000)
+                df_sum_5000_temp[seed_column] = culling_5000
+
+        df_sum_5000_temp["radius"] = radius
+        if df_sum_5000.shape[0] == 0:
+            df_sum_5000 = pd.DataFrame(df_sum_5000_temp, index=[0])
+            df_sum_5000.set_index("radius")
+        else:
+            df_sum_5000 = df_sum_5000._append(
+                pd.DataFrame(df_sum_5000_temp, index=[0]), ignore_index=False
+            )
+
         average = np.average(total_culling_5000)
         std = np.std(total_culling_5000)
-        new_row = {"radius": column_name, "average": average, "std": std}
-
+        new_row = {"radius": radius, "average": average, "std": std}
         result = result._append(new_row, ignore_index=True)
     based_average = result["average"][0]
+    based_std = result["std"][0]
     result["diff_based"] = result["average"] - based_average
-    result["diff_percentage"] = result["diff_based"] / based_average * 100
+    result["diff_std_percentage"] = (
+        (result["std"] - based_std) / based_std * 100
+    ).abs()
+    result["diff_percentage"] = (result["diff_based"] / based_average * 100).abs()
+
+    find_difference_based_on_radius(df_sum_5000)
     return result
 
 
@@ -204,95 +263,100 @@ def create_culling_drop_scatter_plot(
     df_culling1["decresed_area_percent"] = (
         0.5 * np.pi * df_culling1["radius"].astype(int) ** 2 / total_area
     ) * 100
-    culling_drop_percentages = df_culling1["diff_percentage"].abs().tolist()
-    decreased_area_percentages = df_culling1["decresed_area_percent"].tolist()
-    intrusion_radii = df_culling1["radius"].astype(str).tolist()
+    df_culling1["std_percetage"] = df_culling1["std"] / df_culling1["average"] * 100
+    # culling_drop_percentages = df_culling1["diff_percentage"].abs().tolist()
+    # decreased_area_percentages = df_culling1["decresed_area_percent"].tolist()
+    # intrusion_radii = df_culling1["radius"].astype(str).tolist()
+    print(df_culling1)
+    plt.figure(figsize=(8, 4))
 
-    # plt.figure(figsize=(8, 4))
+    plt.bar(
+        df_culling1["radius"].tolist(),
+        df_culling1["diff_percentage"].abs().tolist(),
+        color="blue",
+        width=0.5,
+        label="Culling Drop (%)",
+    )
+    plt.errorbar(
+        df_culling1["radius"].tolist(),
+        df_culling1["diff_percentage"].abs().tolist(),
+        df_culling1["diff_std_percentage"].tolist(),
+        capsize=4,
+        color="grey",
+        label="Culling Drop (%) - Food Regeneration 0.0025",
+        fmt="o",
+    )
+    plt.scatter(
+        df_culling1["radius"].tolist(),
+        df_culling1["decresed_area_percent"].tolist(),
+        color="orange",
+        label="Decreased Area (%)",
+    )
 
-    # plt.bar(
-    #     intrusion_radii,
-    #     culling_drop_percentages,
-    #     color="blue",
-    #     width=0.5,
-    #     label="Culling Drop (%)",
+    plt.xlabel("Intrusion Radius")
+    plt.ylabel("Decreased Percentage (%)")
+    plt.title("Culling Drop and Decreased Area vs Intrusion Radius")
+    plt.grid(axis="y", linestyle="--", alpha=0.6)
+    plt.xticks(intrusion_radii)
+    plt.axhline(0, color="grey", linestyle="--", linewidth=1, alpha=0.8)
+    plt.legend()
+    plt.tight_layout()
+
+    # plt.savefig(image_folder_path + "culling_drop_vs_intrusion_radius.svg")
+    plt.show()
+
+    # fig, ax1 = plt.subplots(figsize=(8, 4))
+
+    # ax2 = ax1.twinx()
+
+    # # ax1.bar(
+    # #     intrusion_radii,
+    # #     culling_drop_percentages,
+    # #     color="blue",
+    # #     width=0.3,
+    # #     label="Culling Drop (%)",
+    # # )
+    # ax1.errorbar(
+    #     df_culling1["radius"].tolist()[1:],
+    #     df_culling1["average"].tolist()[1:],
+    #     df_culling1["std"].tolist()[1:],
+    #     capsize=4,
+    #     color="grey",
+    #     label="Culling Drop (%) - Food Regeneration 0.0025",
+    #     # fmt="o",
     # )
-    # plt.scatter(
+    # ax1.errorbar(
+    #     df_culling2["radius"].tolist()[1:],
+    #     df_culling2["average"].tolist()[1:],
+    #     df_culling2["std"].tolist()[1:],
+    #     capsize=4,
+    #     color="blue",
+    #     label="Culling Drop (%) - Food Regeneration 0.0035",
+    #     # fmt="o",
+    # )
+    # ax2.scatter(
     #     intrusion_radii,
     #     decreased_area_percentages,
     #     color="orange",
     #     label="Decreased Area (%)",
     # )
 
-    # plt.xlabel("Intrusion Radius")
-    # plt.ylabel("Decreased Percentage (%)")
-    # plt.title("Culling Drop and Decreased Area vs Intrusion Radius")
+    # ax1.legend(loc="upper right", fontsize="small")
+    # ax2.legend(loc="upper left", fontsize="small")
+    # # ax1.set_yscale("log")
+    # # ax2.set_yscale("log")
+    # ax1.set_xlabel("Intrusion Radius")
+    # ax1.set_ylabel("Average Culling Drop")
+    # ax2.set_ylabel("Decreased Percentage (%)")
+    # ax2.set_ylim(0, 80)
+
     # plt.grid(axis="y", linestyle="--", alpha=0.6)
     # plt.xticks(intrusion_radii)
     # plt.axhline(0, color="grey", linestyle="--", linewidth=1, alpha=0.8)
-    # plt.legend()
+    # plt.title("Culling Drop and Decreased Area vs Intrusion Radius")
+
     # plt.tight_layout()
-
-    # # plt.savefig(image_folder_path + "culling_drop_vs_intrusion_radius.svg")
     # plt.show()
-
-    culling_drop_percentages1 = df_culling1["average"].tolist()
-    culling_errors1 = df_culling1["std"].tolist()
-
-    culling_drop_percentages2 = df_culling2["average"].tolist()
-    culling_errors2 = df_culling2["std"].tolist()
-    fig, ax1 = plt.subplots(figsize=(8, 4))
-
-    ax2 = ax1.twinx()
-
-    # ax1.bar(
-    #     intrusion_radii,
-    #     culling_drop_percentages,
-    #     color="blue",
-    #     width=0.3,
-    #     label="Culling Drop (%)",
-    # )
-    ax1.errorbar(
-        intrusion_radii,
-        culling_drop_percentages1,
-        culling_errors1,
-        capsize=4,
-        color="grey",
-        label="Culling Drop (%) - Food Regeneration 0.0025",
-        # fmt="o",
-    )
-    ax1.errorbar(
-        intrusion_radii,
-        culling_drop_percentages2,
-        culling_errors2,
-        capsize=4,
-        color="blue",
-        label="Culling Drop (%) - Food Regeneration 0.0035",
-        # fmt="o",
-    )
-    ax2.scatter(
-        intrusion_radii,
-        decreased_area_percentages,
-        color="orange",
-        label="Decreased Area (%)",
-    )
-
-    ax1.legend(loc="upper right", fontsize="small")
-    ax2.legend(loc="upper left", fontsize="small")
-    # ax1.set_yscale("log")
-    # ax2.set_yscale("log")
-    ax1.set_xlabel("Intrusion Radius")
-    ax1.set_ylabel("Average Culling Drop")
-    ax2.set_ylabel("Decreased Percentage (%)")
-    ax2.set_ylim(0, 80)
-
-    plt.grid(axis="y", linestyle="--", alpha=0.6)
-    plt.xticks(intrusion_radii)
-    plt.axhline(0, color="grey", linestyle="--", linewidth=1, alpha=0.8)
-    plt.title("Culling Drop and Decreased Area vs Intrusion Radius")
-
-    plt.tight_layout()
-    plt.show()
 
     # # plt.savefig(image_folder_path + "culling_drop_vs_intrusion_radius.svg")
     # plt.show()

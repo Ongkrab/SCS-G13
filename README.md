@@ -1,8 +1,6 @@
 # Project's Name
 
-< A short description of what your project does >
-
-< Add an optional screenshot of your project below >
+This source code is implemented for project "Population dynamics of agent-based predator-prey system in a changing arena" in Simulation of complex adaptive sysmtems. That simulate Population dynamics for prey and predator in certain area
 
 ![]()
 

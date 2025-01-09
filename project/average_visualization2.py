@@ -179,8 +179,8 @@ def single_population_dynamics_2axis(
 
     max_steps = df_reindeer.shape[0]
 
-    ax1.set_ylim(0, 350)
-    ax2.set_ylim(0, 50)
+    ax1.set_ylim(0, 400)
+    ax2.set_ylim(0, 80)
     ax1.set_xlim(0, 10000)
 
     ax1.set_xlabel("Time Step")
@@ -396,8 +396,8 @@ def average_population_dynamics_2axis(
 
     max_steps = df_reindeer.shape[0]
 
-    ax1.set_ylim(0, 350)
-    ax2.set_ylim(0, 50)
+    ax1.set_ylim(0, 400)
+    ax2.set_ylim(0, 80)
     ax1.set_xlim(0, 10000)
 
     ax1.set_xlabel("Time Step")
@@ -474,8 +474,8 @@ def create_culling_drop_scatter_plot(
     plt.bar(
         df_culling2["radius"].tolist()[1:],
         df_culling2["diff_percentage"].abs().tolist()[1:],
-        color="red",
-        width=0.5,
+        color="tomato",
+        width=0.4,
         label="Culling Drop (%)",
     )
     plt.errorbar(
@@ -485,7 +485,7 @@ def create_culling_drop_scatter_plot(
         capsize=4,
         color="orange",
         label="Culling Drop STD (%)",
-        # fmt="o",
+        fmt=".",
     )
     plt.scatter(
         intrusion_radii,
@@ -496,6 +496,7 @@ def create_culling_drop_scatter_plot(
 
     plt.xlabel("Intrusion Radius")
     plt.ylabel("Decreased Percentage (%)")
+    plt.ylim(0, 60)
     plt.title("Culling Drop and Decreased Area vs Intrusion Radius")
     plt.grid(axis="y", linestyle="--", alpha=0.6)
     plt.xticks(intrusion_radii)
